@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>rebake</title>
+    <meta name="description" content="Convert files in your browser. Files never leave this device." />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f7f7" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111111" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="preload" href="/src/assets/fonts/schibsted-grotesk.woff2" as="font" type="font/woff2" crossorigin />
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body data-state="empty">
+    <div class="frame" aria-hidden="true"></div>
+    <div class="page">
+      <header class="mark"><a href="/">rebake</a></header>
+
+      <main class="stage">
+        <h1 class="title" id="title" data-flip tabindex="-1">
+          <span id="from">Drop a file</span>
+          <span id="joiner" class="vh" hidden>to</span>
+          <svg id="glyph" class="glyph" viewBox="0 0 24 24" aria-hidden="true" hidden>
+            <path class="arrow" pathLength="1" d="M3 12h17M13.5 5.5 20 12l-6.5 6.5" />
+            <path class="tick" pathLength="1" d="M3.5 13 9.5 19 20.5 6" />
+          </svg>
+          <span id="to" class="to"></span>
+        </h1>
+
+        <p class="meta" id="meta" data-flip hidden></p>
+
+        <fieldset class="targets" id="targets" data-flip hidden>
+          <legend class="vh">Convert to</legend>
+        </fieldset>
+
+        <div class="drawer" id="drawer" data-flip hidden>
+          <button class="quiet" id="more" type="button" aria-expanded="false" aria-controls="options">More</button>
+          <div class="options" id="options" inert>
+            <div class="options-inner">
+              <label class="field" id="quality-field" data-show="lossy-image">
+                <span>Quality <output id="quality-value">82</output></span>
+                <input id="quality" data-keep="quality" type="range" min="1" max="100" value="82" />
+              </label>
+              <div class="field-pair" data-show="image">
+                <label class="field">
+                  <span>Max width</span>
+                  <input id="max-width" data-keep="maxWidth" type="number" inputmode="numeric" min="1" placeholder="None" />
+                </label>
+                <label class="field">
+                  <span>Max height</span>
+                  <input id="max-height" data-keep="maxHeight" type="number" inputmode="numeric" min="1" placeholder="None" />
+                </label>
+              </div>
+              <label class="check" data-show="image">
+                <input id="strip" data-keep="strip" type="checkbox" checked />
+                <span>Strip metadata</span>
+              </label>
+
+              <fieldset class="choice" data-show="page-size">
+                <legend>Page size</legend>
+                <label class="target"><input type="radio" name="pageSize" data-keep="pageSize" value="a4" checked /><span>A4</span></label>
+                <label class="target"><input type="radio" name="pageSize" data-keep="pageSize" value="letter" /><span>Letter</span></label>
+              </fieldset>
+              <label class="field" data-show="pages">
+                <span>Pages</span>
+                <input id="pages" type="text" autocomplete="off" placeholder="All" />
+              </label>
+              <fieldset class="choice" id="sheets" data-show="sheets">
+                <legend>Sheet</legend>
+              </fieldset>
+
+              <fieldset class="choice" data-show="video">
+                <legend>Quality</legend>
+                <label class="target"><input type="radio" name="preset" data-keep="preset" value="small" /><span>Small</span></label>
+                <label class="target"><input type="radio" name="preset" data-keep="preset" value="balanced" checked /><span>Balanced</span></label>
+                <label class="target"><input type="radio" name="preset" data-keep="preset" value="high" /><span>High</span></label>
+              </fieldset>
+              <fieldset class="choice" data-show="video gif">
+                <legend>Max resolution</legend>
+                <label class="target"><input type="radio" name="resolution" data-keep="resolution" value="" checked /><span>Original</span></label>
+                <label class="target"><input type="radio" name="resolution" data-keep="resolution" value="2160" /><span>4K</span></label>
+                <label class="target"><input type="radio" name="resolution" data-keep="resolution" value="1080" /><span>1080p</span></label>
+                <label class="target"><input type="radio" name="resolution" data-keep="resolution" value="720" /><span>720p</span></label>
+                <label class="target"><input type="radio" name="resolution" data-keep="resolution" value="480" /><span>480p</span></label>
+              </fieldset>
+              <div class="field-pair" data-show="trim">
+                <label class="field">
+                  <span>Trim start</span>
+                  <input id="trim-start" type="text" inputmode="decimal" autocomplete="off" placeholder="0:00" />
+                </label>
+                <label class="field">
+                  <span>Trim end</span>
+                  <input id="trim-end" type="text" inputmode="decimal" autocomplete="off" placeholder="End" />
+                </label>
+              </div>
+              <label class="check" data-show="has-audio">
+                <input id="remove-audio" data-keep="removeAudio" type="checkbox" />
+                <span>Remove audio</span>
+              </label>
+
+              <fieldset class="choice" data-show="lossy-audio">
+                <legend>Bitrate</legend>
+                <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="" checked /><span>Auto</span></label>
+                <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="96000" /><span>96</span></label>
+                <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="128000" /><span>128</span></label>
+                <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="192000" /><span>192</span></label>
+                <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="256000" /><span>256</span></label>
+                <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="320000" /><span>320</span></label>
+              </fieldset>
+              <fieldset class="choice" data-show="audio">
+                <legend>Channels</legend>
+                <label class="target"><input type="radio" name="channels" data-keep="channels" value="" checked /><span>Same</span></label>
+                <label class="target"><input type="radio" name="channels" data-keep="channels" value="1" /><span>Mono</span></label>
+                <label class="target"><input type="radio" name="channels" data-keep="channels" value="2" /><span>Stereo</span></label>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+
+        <div class="action" id="action" data-flip>
+          <button class="primary" id="primary" type="button">Choose file</button>
+          <div class="progress" id="progress" role="progressbar" aria-label="Converting" aria-valuemin="0" aria-valuemax="100" hidden>
+            <div class="progress-fill" id="progress-fill"></div>
+            <span class="progress-text" id="progress-text"></span>
+          </div>
+          <button class="quiet" id="secondary" type="button" hidden></button>
+        </div>
+      </main>
+
+      <footer class="promise" data-flip><a href="/privacy">Files never leave this device.</a></footer>
+    </div>
+
+    <input id="picker" type="file" multiple hidden
+      accept="image/heic,image/heif,.heic,.heif,.hif,image/jpeg,image/png,image/webp,image/avif,image/gif,image/tiff,image/jxl,.jxl,image/svg+xml,.svg,image/x-icon,.ico,.cur,video/mp4,video/quicktime,video/webm,video/x-matroska,.mp4,.m4v,.mov,.qt,.webm,.mkv,audio/mpeg,audio/mp4,audio/aac,audio/ogg,audio/opus,audio/flac,audio/wav,.mp3,.m4a,.m4b,.aac,.opus,.ogg,.oga,.flac,.wav,.md,.markdown,.mdown,.mkd,.html,.htm,.xhtml,.docx,.odt,.epub,.rtf,.tex,.latex,.pdf,.csv,.tsv,.tab,.json,.yaml,.yml,.xlsx" />
+    <p class="vh" id="live" role="status" aria-live="polite"></p>
+  </body>
+</html>

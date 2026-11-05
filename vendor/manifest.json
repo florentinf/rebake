@@ -1,0 +1,209 @@
+{
+  "vips": {
+    "version": "0.0.19",
+    "files": {
+      "vips-es6.js": {
+        "sha256": "ee8eaf159ef3e439f1ccda14eb8dea5e3174f949f5cddba426000c81b4424bde",
+        "bytes": 85277,
+        "brotli": 30846,
+        "upstreamSha256": "4de6113dc80958b2acc7d45af95086277bab670af474125fdbd179e62dae96af"
+      },
+      "vips.wasm": {
+        "sha256": "36c25e290570757f911b45d67947e8262b01261028db438dadc09990ad978ff6",
+        "bytes": 5154052,
+        "brotli": 1773398
+      },
+      "vips-heif.wasm": {
+        "sha256": "f8f94224977c9de22118274e09adc4d4a4e6dd81a55e261406d69d7fd3021667",
+        "bytes": 3802681,
+        "brotli": 1115969
+      },
+      "vips-jxl.wasm": {
+        "sha256": "ffdd01c8dbd6a8fc616f1a023cbf2b526d12df770f5adca96e44cdf8c20c8afe",
+        "bytes": 2224543,
+        "brotli": 695751
+      },
+      "vips-resvg.wasm": {
+        "sha256": "9c7c1c78260240c454cce7ff875dc8026985c433f27ea90e849f02d50cea8917",
+        "bytes": 1176530,
+        "brotli": 401987
+      }
+    }
+  },
+  "libheif": {
+    "version": "1.23.5",
+    "files": {
+      "libheif-bundle.mjs": {
+        "sha256": "095194187be00d3e36335b8ad7f5552d70655e5e2159486d7d36cd4daa47bba9",
+        "bytes": 2043959,
+        "brotli": 584312
+      }
+    }
+  },
+  "mp3": {
+    "version": "1.65.2",
+    "files": {
+      "mp3-encoder.mjs": {
+        "sha256": "bbe64a2222931c3a72d9e62a0d6ff9541785ebb5a5ed3065be43075149ddf79d",
+        "bytes": 473604,
+        "brotli": 112027,
+        "upstreamSha256": "3fd0628ceaca730cd8354229d4b289e20151860d2b99c760f2dbe41b8e61774c"
+      }
+    }
+  },
+  "aac": {
+    "version": "1.65.2",
+    "files": {
+      "aac-encoder.mjs": {
+        "sha256": "272a02e531494fabc087f56413c5b0c4b2c771fc421d1e19d90924cda0ef92fc",
+        "bytes": 1129455,
+        "brotli": 260593,
+        "upstreamSha256": "f7ef810c56d7f018929ed0954cdb82670bf2ad0bb988e75bc1a2f3d8bc23495f"
+      }
+    }
+  },
+  "flac": {
+    "version": "1.65.2",
+    "files": {
+      "flac-encoder.mjs": {
+        "sha256": "2d3bd52a91cb1c304250f0ec393fe405457c2dd5b6d85e74526fbaf9f9ece067",
+        "bytes": 323009,
+        "brotli": 76881,
+        "upstreamSha256": "417f07f6e08ff8c1c8e0e4824dedb0c8d6eb43a523dafb569d2484a37fee7b03"
+      }
+    }
+  },
+  "typst": {
+    "version": "0.7.0",
+    "files": {
+      "typst.mjs": {
+        "sha256": "c33ec57425ea7caf483ccbed41ef219956a23f3d3e135e341f5e0d5f75270e73",
+        "bytes": 60439,
+        "brotli": 8591,
+        "upstreamSha256": "96735c6da3dd220255ba368e34c695227fc67e0b4104e7a8e039dd9bc2fc5312"
+      },
+      "typst.wasm": {
+        "sha256": "1fc968438a672366dfec39c96c842c26ed29caff4eb1bcaab19a6c60867de5fd",
+        "bytes": 28325178,
+        "brotli": 8145949
+      }
+    }
+  },
+  "pdfjs": {
+    "version": "6.5.438",
+    "files": {
+      "pdf.mjs": {
+        "sha256": "3a88402882cfa3e7e72c2c9b5149f52f0f88baf1c5b62aa11a41abdbc2072440",
+        "bytes": 474284,
+        "brotli": 122998
+      },
+      "pdf.worker.mjs": {
+        "sha256": "1e64c8240e54735ec5913b37acd5134747799cb8c6bb3777c70adbc01232d2aa",
+        "bytes": 1271915,
+        "brotli": 344981
+      },
+      "openjpeg.wasm": {
+        "sha256": "7ea4b2b04613370ad4e9c1162da750cc88b4b176eac0d0c164b3caff23fc0a46",
+        "bytes": 220817,
+        "brotli": 65106
+      },
+      "jbig2.wasm": {
+        "sha256": "466f45c2a61a698152fb5400c27e56ff2ceb73dcb71fde3fc366a502308eaab0",
+        "bytes": 103671,
+        "brotli": 36497
+      },
+      "qcms_bg.wasm": {
+        "sha256": "663d86126d5f5fcb1c61490f94353e2a8375660b8c5498ab3ebab5a34b08800e",
+        "bytes": 96589,
+        "brotli": 32371
+      },
+      "data.pack": {
+        "sha256": "bf747de0b20bf3463dddc6adf78816b8dcb425e8a00cfb1d6b44634c97359bb3",
+        "bytes": 1947366,
+        "brotli": 885204
+      }
+    }
+  },
+  "pdflib": {
+    "version": "1.17.1",
+    "files": {
+      "pdf-lib.mjs": {
+        "sha256": "72c052d97b4d5d9fa6cdbdcb7ad709f03d4ddb1122390cb3afeba4d88651d969",
+        "bytes": 523417,
+        "brotli": 174491
+      }
+    }
+  },
+  "xlsx": {
+    "version": "0.20.3",
+    "files": {
+      "xlsx.mjs": {
+        "sha256": "1a0fb062ee9781b13f6687371b202aaefc53b6ce55b530c027e01f9c087b77db",
+        "bytes": 1008308,
+        "brotli": 224029
+      }
+    }
+  },
+  "pandoc": {
+    "version": "3.9",
+    "source": "https://github.com/jgm/pandoc/releases/download/3.9/pandoc-3.9.wasm.zip",
+    "files": {
+      "pandoc.wasm": {
+        "sha256": "28b8957656c10114bc34e63978503b06be7404c92129fef9299782fd1829eef8",
+        "bytes": 58379729,
+        "brotli": 12749123
+      }
+    }
+  },
+  "fonts": {
+    "version": "0.14.2",
+    "source": "https://github.com/typst/typst-assets/archive/refs/tags/v0.14.2.tar.gz",
+    "files": {
+      "LibertinusSerif-Regular.otf": {
+        "sha256": "fcf06307a77367394fcb0ccb241e59eea70dba3d732be309647611224679c733",
+        "bytes": 337132,
+        "brotli": 232771
+      },
+      "LibertinusSerif-Bold.otf": {
+        "sha256": "0264914210ed51b3231ebc92ce529e9f2e166ba9eebf0cd4a579558690a27b64",
+        "bytes": 293908,
+        "brotli": 199025
+      },
+      "LibertinusSerif-Italic.otf": {
+        "sha256": "9a393d63d6e05f620d3dc0190dfd35a8ede58c0808cf0fc9de7fcb9c723e4c24",
+        "bytes": 332312,
+        "brotli": 230923
+      },
+      "LibertinusSerif-BoldItalic.otf": {
+        "sha256": "47a665259f09f554f5d133d7718cdad43ff462c6a6b2328f38023465e62d57ce",
+        "bytes": 259176,
+        "brotli": 177017
+      },
+      "NewCMMath-Book.otf": {
+        "sha256": "765b14d6f8a8d3e9b319f168cc1b10dd89df38d34108e75b44013904bb173218",
+        "bytes": 1278420,
+        "brotli": 770695
+      },
+      "DejaVuSansMono.ttf": {
+        "sha256": "b4a6c3e4faab8773f4ff761d56451646409f29abedd68f05d38c2df667d3c582",
+        "bytes": 340712,
+        "brotli": 182614
+      },
+      "DejaVuSansMono-Bold.ttf": {
+        "sha256": "bce60f1b4421acd9ea51ba6623d7024ecbe6817a953e3654df62a5e6bdf8f769",
+        "bytes": 331992,
+        "brotli": 180903
+      },
+      "DejaVuSansMono-Oblique.ttf": {
+        "sha256": "742097840c541870e8d6dc5c9b37bb1ceeea6c0dedd1d475faf903ef9df734b0",
+        "bytes": 251932,
+        "brotli": 137024
+      },
+      "DejaVuSansMono-BoldOblique.ttf": {
+        "sha256": "91713a71d550bba22c2a6b2bb2a9ad8f9a159e12e4e9f0a5b2677998ba21213e",
+        "bytes": 253580,
+        "brotli": 138130
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+# Build and test only. furka takes SSH over Tailscale alone, so deploys run from
+# a machine on the tailnet: `npm run deploy`.
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg pandoc qpdf
+      - run: npm run fixtures
+        env:
+          REBAKE_FIXTURES: ${{ runner.temp }}/fixtures
+      - run: npm test
+        env:
+          REBAKE_FIXTURES: ${{ runner.temp }}/fixtures

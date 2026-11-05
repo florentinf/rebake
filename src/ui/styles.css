@@ -1,0 +1,397 @@
+@font-face {
+  font-family: 'Schibsted Grotesk';
+  src: url('../assets/fonts/schibsted-grotesk.woff2') format('woff2');
+  font-weight: 400 600;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light dark;
+
+  --bg: oklch(97.5% 0 0);
+  --surface: oklch(93% 0 0);
+  --surface-hover: oklch(89.5% 0 0);
+  --line: oklch(84% 0 0);
+  --ink: oklch(19% 0 0);
+  --ink-2: oklch(45% 0 0);
+  --on-ink: oklch(98% 0 0);
+  --accent: oklch(50% 0.11 187);
+  --accent-wash: oklch(50% 0.11 187 / 0.07);
+  --error: oklch(50% 0.17 27);
+
+  --gutter: clamp(1.25rem, 4vw, 2.5rem);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --spring: linear(0, 0.3 9%, 0.72 21%, 1.04 36%, 1.09 45%, 1.05 56%, 1 72%, 0.995 84%, 1);
+  --fast: 150ms;
+  --base: 220ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: oklch(17% 0 0);
+    --surface: oklch(23.5% 0 0);
+    --surface-hover: oklch(28% 0 0);
+    --line: oklch(33% 0 0);
+    --ink: oklch(95% 0 0);
+    --ink-2: oklch(72% 0 0);
+    --on-ink: oklch(17% 0 0);
+    --accent: oklch(78% 0.11 187);
+    --accent-wash: oklch(78% 0.11 187 / 0.08);
+    --error: oklch(76% 0.13 27);
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html {
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+  scrollbar-color: var(--line) transparent;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 1rem/1.4 'Schibsted Grotesk', system-ui, sans-serif;
+  font-feature-settings: 'tnum';
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  caret-color: var(--accent);
+}
+
+::selection { background: var(--accent); color: var(--bg); }
+
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.page {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding:
+    max(var(--gutter), env(safe-area-inset-top))
+    max(var(--gutter), env(safe-area-inset-right))
+    max(var(--gutter), env(safe-area-inset-bottom))
+    max(var(--gutter), env(safe-area-inset-left));
+}
+
+.mark { font-weight: 600; letter-spacing: -0.01em; }
+
+a { color: inherit; text-decoration: none; border-radius: 0.125rem; }
+a:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+.mark a, .promise a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  margin-block: -0.75rem;
+}
+
+.stage {
+  align-self: end;
+  width: 100%;
+  max-width: 56rem;
+  padding-block: 2.5rem 1.5rem;
+  display: grid;
+  gap: 1.25rem;
+}
+
+/* The title carries the app: what you have, what you'll get. */
+.title {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 0.18em;
+  font-size: clamp(3rem, 12.5vw, 8.5rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.title:focus-visible { outline: none; }
+
+.glyph {
+  width: 0.72em;
+  height: 0.72em;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.1;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  overflow: visible;
+}
+.glyph path {
+  stroke-dasharray: 1;
+  transition: stroke-dashoffset var(--base) var(--ease-out), opacity var(--fast) linear;
+}
+.arrow { stroke-dashoffset: 0; }
+.tick { stroke-dashoffset: 1; opacity: 0; stroke: var(--accent); }
+
+[data-state='done'] .arrow { stroke-dashoffset: 1; opacity: 0; }
+[data-state='done'] .tick { stroke-dashoffset: 0; opacity: 1; transition-delay: 60ms; }
+
+.to { display: inline-block; }
+
+.meta {
+  margin: 0;
+  color: var(--ink-2);
+  overflow-wrap: anywhere;
+  min-height: 1.4em;
+}
+.meta.error { color: var(--error); }
+
+.targets {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.target { position: relative; display: block; }
+.target input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.target span {
+  display: grid;
+  place-items: center;
+  min-width: 4.25rem;
+  height: 2.75rem;
+  padding-inline: 0.875rem;
+  max-width: 100%;
+  border-radius: 0.5rem;
+  background: var(--surface);
+  font-weight: 600;
+  transition: background-color var(--fast) ease-out, color var(--fast) ease-out, transform var(--fast) ease-out;
+}
+.target input:hover + span { background: var(--surface-hover); }
+.target input:active + span { transform: scale(0.97); }
+.target input:checked + span { background: var(--ink); color: var(--on-ink); }
+.target input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.action {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3.5rem;
+}
+
+button { font: inherit; color: inherit; touch-action: manipulation; }
+
+.primary {
+  flex: 0 1 20rem;
+  height: 3.5rem;
+  padding-inline: 1.75rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: var(--ink);
+  color: var(--on-ink);
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity var(--fast) ease-out, transform var(--fast) ease-out;
+}
+.primary:hover { opacity: 0.88; }
+.primary:active { transform: scale(0.985); }
+.primary:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+.quiet {
+  min-height: 2.75rem;
+  padding-inline: 0.75rem;
+  margin-inline-start: -0.75rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: none;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: color var(--fast) ease-out;
+}
+.quiet:hover { color: var(--ink); }
+.action .quiet { margin-inline-start: 0; }
+
+.progress {
+  position: relative;
+  flex: 0 1 20rem;
+  height: 3.5rem;
+  border-radius: 0.5rem;
+  background: var(--surface);
+  overflow: hidden;
+}
+.progress-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  opacity: 0.28;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--base) var(--ease-out);
+}
+/* No signal for this stage: the bar holds still and breathes rather than fake movement. */
+.progress.waiting .progress-fill { animation: waiting 1.4s ease-in-out infinite; }
+@keyframes waiting { 50% { opacity: 0.14; } }
+
+.progress-text {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center start;
+  padding-inline: 1.25rem;
+  font-weight: 600;
+}
+
+[data-state='done'] .primary {
+  background: var(--surface);
+  color: var(--ink);
+}
+[data-state='done'] .primary:hover { background: var(--surface-hover); opacity: 1; }
+
+.drawer { display: grid; justify-items: start; margin-block: -0.5rem; }
+
+.options {
+  display: grid;
+  grid-template-rows: 0fr;
+  width: 100%;
+  max-width: 28rem;
+  visibility: hidden;
+  transition: grid-template-rows var(--base) var(--ease-out), visibility var(--base);
+}
+.drawer.open .options { grid-template-rows: 1fr; visibility: visible; }
+/* The inset leaves room for focus rings, which the clip would otherwise cut off. */
+.options-inner {
+  overflow: hidden;
+  min-height: 0;
+  display: grid;
+  gap: 1rem;
+  padding-inline: 0.25rem;
+  margin-inline: -0.25rem;
+}
+.drawer.open .options-inner { padding-block: 0.5rem 0.75rem; }
+
+.field { display: grid; gap: 0.25rem; color: var(--ink-2); }
+.field > span { display: flex; justify-content: space-between; }
+.field output { color: var(--ink); font-weight: 600; }
+.field-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+.choice {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+.choice legend {
+  padding: 0;
+  margin-block-end: 0.25rem;
+  color: var(--ink-2);
+}
+.choice .target span { min-width: 3.25rem; font-weight: 400; }
+.choice .target input:checked + span { font-weight: 600; }
+/* A sheet can be named anything. */
+#sheets .target { max-width: 100%; }
+#sheets .target span { height: auto; min-height: 2.75rem; overflow-wrap: anywhere; }
+
+input[type='number'], input[type='text'] {
+  width: 100%;
+  height: 2.75rem;
+  padding-inline: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  appearance: textfield;
+}
+input[type='number']::placeholder, input[type='text']::placeholder { color: var(--ink-2); opacity: 1; }
+input[type='number']::-webkit-inner-spin-button { display: none; }
+
+input[type='range'] {
+  width: 100%;
+  height: 2.75rem;
+  margin: 0;
+  accent-color: var(--ink);
+  cursor: pointer;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 2.75rem;
+  cursor: pointer;
+}
+.check input { width: 1.25rem; height: 1.25rem; margin: 0; accent-color: var(--ink); }
+
+.promise { color: var(--ink-2); font-size: 0.9375rem; }
+
+/* Drag-over: the frame arrives with a little overshoot, then the page waits. */
+.frame {
+  position: fixed;
+  inset: 0.625rem;
+  z-index: 1;
+  pointer-events: none;
+  border: 2px solid var(--accent);
+  border-radius: 0.875rem;
+  background: var(--accent-wash);
+  opacity: 0;
+  transform: scale(1.015);
+  transition: opacity var(--fast) ease-out, transform var(--fast) ease-out;
+}
+.dragging .frame {
+  opacity: 1;
+  transform: none;
+  transition: opacity 90ms ease-out, transform 280ms var(--spring);
+}
+
+@media (max-width: 40rem) {
+  .primary, .progress { flex: 1 1 auto; }
+  .target { flex: 1 1 auto; min-width: 22%; }
+  .target span { min-width: 0; }
+}
+
+@media (max-height: 30rem) {
+  .title { font-size: clamp(2.5rem, 12vh, 4rem); }
+  .stage { padding-block: 1rem; gap: 0.75rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
+}
+
+.text-page { grid-template-rows: auto 1fr; }
+.prose { align-self: end; max-width: 34rem; padding-block: 2.5rem 1.5rem; }
+.prose h1 {
+  margin: 0 0 2rem;
+  font-size: clamp(3rem, 12.5vw, 8.5rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.prose p { margin: 0 0 1rem; color: var(--ink-2); overflow-wrap: anywhere; }
+.prose a { color: var(--ink); text-decoration: underline; text-underline-offset: 0.2em; }

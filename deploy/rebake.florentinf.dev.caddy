@@ -1,0 +1,47 @@
+# rebake: static, client-side file converter. Grey-clouded on purpose: visitors
+# reach this server directly, so it keeps Caddy's automatic http->https redirect
+# like drop.florentinf.dev. The certificate comes from the global DNS-01 issuer.
+#
+# No `log` directive, and `log_skip` on both schemes. Leaving `log` out isn't
+# enough here: other sites define loggers, so a host without one lands in Caddy's
+# default access log (the journal) with its IP and user agent. Port 80 is written
+# out by hand because the automatic redirect route can't carry log_skip.
+http://rebake.florentinf.dev {
+	log_skip
+	redir https://{host}{uri} 308
+}
+
+rebake.florentinf.dev {
+	log_skip
+	root * /var/www/rebake
+
+	header {
+		Content-Security-Policy "default-src 'self'; connect-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; worker-src 'self' blob:; script-src 'self' 'wasm-unsafe-eval'; object-src 'none'; base-uri 'none'; form-action 'none'"
+		Cross-Origin-Opener-Policy "same-origin"
+		Cross-Origin-Embedder-Policy "require-corp"
+		Cross-Origin-Resource-Policy "same-origin"
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "no-referrer"
+		-Server
+	}
+
+	@hashed path /assets/* /engines/*
+	header @hashed Cache-Control "public, max-age=31536000, immutable"
+
+	@fresh not path /assets/* /engines/*
+	header @fresh Cache-Control "no-cache"
+
+	try_files {path} {path}.html
+
+	file_server {
+		precompressed br
+	}
+
+	handle_errors 404 {
+		rewrite * /404.html
+		file_server {
+			precompressed br
+		}
+	}
+}
