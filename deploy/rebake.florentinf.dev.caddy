@@ -6,15 +6,8 @@
 # enough here: other sites define loggers, so a host without one lands in Caddy's
 # default access log (the journal) with its IP and user agent. Port 80 is written
 # out by hand because the automatic redirect route can't carry log_skip.
-http://rebake.florentinf.dev {
-	log_skip
-	redir https://{host}{uri} 308
-}
-
-rebake.florentinf.dev {
-	log_skip
-	root * /var/www/rebake
-
+# Caddy discards headers set on the way to an error, so handle_errors repeats them.
+(rebake-headers) {
 	header {
 		Content-Security-Policy "default-src 'self'; connect-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; worker-src 'self' blob:; script-src 'self' 'wasm-unsafe-eval'; object-src 'none'; base-uri 'none'; form-action 'none'"
 		Cross-Origin-Opener-Policy "same-origin"
@@ -25,6 +18,18 @@ rebake.florentinf.dev {
 		Referrer-Policy "no-referrer"
 		-Server
 	}
+}
+
+http://rebake.florentinf.dev {
+	log_skip
+	redir https://{host}{uri} 308
+}
+
+rebake.florentinf.dev {
+	log_skip
+	root * /var/www/rebake
+
+	import rebake-headers
 
 	@hashed path /assets/* /engines/*
 	header @hashed Cache-Control "public, max-age=31536000, immutable"
@@ -39,6 +44,8 @@ rebake.florentinf.dev {
 	}
 
 	handle_errors 404 {
+		import rebake-headers
+		header Cache-Control "no-cache"
 		rewrite * /404.html
 		file_server {
 			precompressed br
