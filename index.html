@@ -5,131 +5,199 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>rebake</title>
     <meta name="description" content="Convert files in your browser. Files never leave this device." />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f7f7" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111111" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f9f8f6" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#141312" />
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="preload" href="/src/assets/fonts/schibsted-grotesk.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/src/assets/fonts/hanken-grotesk.woff2" as="font" type="font/woff2" crossorigin />
     <script type="module" src="/src/main.ts"></script>
   </head>
   <body data-state="empty">
-    <div class="frame" aria-hidden="true"></div>
+    <div class="drop-frame" aria-hidden="true"></div>
     <div class="page">
       <header class="mark"><a href="/">rebake</a></header>
 
       <main class="stage">
-        <h1 class="title" id="title" data-flip tabindex="-1">
-          <span id="from">Drop a file</span>
-          <span id="joiner" class="vh" hidden>to</span>
-          <svg id="glyph" class="glyph" viewBox="0 0 24 24" aria-hidden="true" hidden>
-            <path class="arrow" pathLength="1" d="M3 12h17M13.5 5.5 20 12l-6.5 6.5" />
-            <path class="tick" pathLength="1" d="M3.5 13 9.5 19 20.5 6" />
-          </svg>
+        <h1 class="route" id="title" tabindex="-1" hidden>
+          <span id="from"></span>
+          <span id="joiner" class="vh">to</span>
+          <span class="glyph" id="glyph" aria-hidden="true"><svg><path id="track" /><path id="arrow" /></svg></span>
           <span id="to" class="to"></span>
+          <span class="rider" id="rider" aria-hidden="true">0%</span>
         </h1>
 
-        <p class="meta" id="meta" data-flip hidden></p>
+        <div class="zone" id="zone">
+          <i class="corner a" aria-hidden="true"></i><i class="corner b" aria-hidden="true"></i><i class="corner c" aria-hidden="true"></i><i class="corner d" aria-hidden="true"></i>
+          <h1 class="zone-title" id="zone-title">Drop files to convert</h1>
+          <p class="zone-line" id="zone-line">Nothing is uploaded. It all happens on your device.</p>
+          <button class="btn small raised" id="choose" type="button"><span>Choose files</span></button>
+          <div class="zone-negative" id="zone-negative" aria-hidden="true">
+            <i class="corner a"></i><i class="corner b"></i><i class="corner c"></i><i class="corner d"></i>
+            <p class="zone-title" id="negative-title">Drop files to convert</p>
+            <p class="zone-line" id="negative-line">Nothing is uploaded. It all happens on your device.</p>
+            <span class="btn small"><span>Choose files</span></span>
+          </div>
+        </div>
 
-        <fieldset class="targets" id="targets" data-flip hidden>
-          <legend class="vh">Convert to</legend>
-        </fieldset>
+        <ul class="sheet" id="sheet" aria-label="Your files" hidden></ul>
 
-        <div class="drawer" id="drawer" data-flip hidden>
-          <button class="quiet" id="more" type="button" aria-expanded="false" aria-controls="options">More</button>
-          <div class="options" id="options" inert>
+        <p class="meta" id="meta" hidden></p>
+
+        <div class="formats" id="formats">
+          <button class="more" id="formats-toggle" type="button" aria-expanded="false" aria-controls="formats-panel">
+            <span>All formats</span>
+            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" /></svg>
+          </button>
+          <div class="col" id="formats-panel" inert>
+            <div class="index" id="index"><p class="lookup" id="lookup"></p></div>
+          </div>
+        </div>
+
+        <div class="col pick" id="pick" hidden>
+          <fieldset>
+            <legend class="vh">Convert to</legend>
+            <div class="seg seg-large" id="targets"></div>
+          </fieldset>
+        </div>
+
+        <div class="col drawer" id="drawer" hidden>
+          <button class="options-head" id="more" type="button" aria-expanded="false" aria-controls="options">
+            <b>Options</b>
+            <span class="summary" id="summary"></span>
+            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" /></svg>
+          </button>
+          <div class="col options" id="options" inert>
             <div class="options-inner">
-              <label class="field" id="quality-field" data-show="lossy-image">
-                <span>Quality <output id="quality-value">82</output></span>
-                <input id="quality" data-keep="quality" type="range" min="1" max="100" value="82" />
-              </label>
+              <div class="stack" id="quality-field" data-show="lossy-image">
+                <label class="label" for="quality">Quality</label>
+                <div class="sl" id="quality-slider">
+                  <input id="quality" data-keep="quality" type="range" min="1" max="100" value="82" />
+                  <i class="sl-rail"><i class="sl-fill"></i></i>
+                  <i class="sl-mark"></i>
+                  <b class="sl-rider" id="quality-value"></b>
+                  <i class="sl-thumb"></i>
+                </div>
+                <div class="sl-ends"><span>Smaller file</span><span>Better quality</span></div>
+              </div>
               <div class="field-pair" data-show="image">
                 <label class="field">
                   <span>Max width</span>
-                  <input id="max-width" data-keep="maxWidth" type="number" inputmode="numeric" min="1" placeholder="None" />
+                  <input class="input" id="max-width" data-keep="maxWidth" type="number" inputmode="numeric" min="1" placeholder="Any" />
                 </label>
+                <i aria-hidden="true">×</i>
                 <label class="field">
                   <span>Max height</span>
-                  <input id="max-height" data-keep="maxHeight" type="number" inputmode="numeric" min="1" placeholder="None" />
+                  <input class="input" id="max-height" data-keep="maxHeight" type="number" inputmode="numeric" min="1" placeholder="Any" />
                 </label>
               </div>
               <label class="check" data-show="image">
-                <input id="strip" data-keep="strip" type="checkbox" checked />
-                <span>Strip metadata</span>
+                <input id="strip" data-keep="strip" type="checkbox" role="switch" checked />
+                <span>Remove location and camera data</span>
+                <i class="switch" aria-hidden="true"></i>
               </label>
 
               <fieldset class="choice" data-show="page-size">
                 <legend>Page size</legend>
-                <label class="target"><input type="radio" name="pageSize" data-keep="pageSize" value="a4" checked /><span>A4</span></label>
-                <label class="target"><input type="radio" name="pageSize" data-keep="pageSize" value="letter" /><span>Letter</span></label>
+                <div class="seg">
+                  <label class="target"><input type="radio" name="pageSize" data-keep="pageSize" value="a4" checked /><span>A4</span></label>
+                  <label class="target"><input type="radio" name="pageSize" data-keep="pageSize" value="letter" /><span>Letter</span></label>
+                </div>
               </fieldset>
               <label class="field" data-show="pages">
                 <span>Pages</span>
-                <input id="pages" type="text" autocomplete="off" placeholder="All" />
+                <input class="input" id="pages" type="text" autocomplete="off" placeholder="All, or like 1-3, 5" />
               </label>
-              <fieldset class="choice" id="sheets" data-show="sheets">
+              <fieldset class="choice" data-show="sheets">
                 <legend>Sheet</legend>
+                <div class="seg" id="sheets"></div>
               </fieldset>
 
               <fieldset class="choice" data-show="video">
                 <legend>Quality</legend>
-                <label class="target"><input type="radio" name="preset" data-keep="preset" value="small" /><span>Small</span></label>
-                <label class="target"><input type="radio" name="preset" data-keep="preset" value="balanced" checked /><span>Balanced</span></label>
-                <label class="target"><input type="radio" name="preset" data-keep="preset" value="high" /><span>High</span></label>
+                <div class="seg">
+                  <label class="target"><input type="radio" name="preset" data-keep="preset" value="small" /><span>Small file</span></label>
+                  <label class="target"><input type="radio" name="preset" data-keep="preset" value="balanced" checked /><span>Balanced</span></label>
+                  <label class="target"><input type="radio" name="preset" data-keep="preset" value="high" /><span>High</span></label>
+                </div>
               </fieldset>
               <fieldset class="choice" data-show="video gif">
                 <legend>Max resolution</legend>
-                <label class="target"><input type="radio" name="resolution" data-keep="resolution" value="" checked /><span>Original</span></label>
-                <label class="target"><input type="radio" name="resolution" data-keep="resolution" value="2160" /><span>4K</span></label>
-                <label class="target"><input type="radio" name="resolution" data-keep="resolution" value="1080" /><span>1080p</span></label>
-                <label class="target"><input type="radio" name="resolution" data-keep="resolution" value="720" /><span>720p</span></label>
-                <label class="target"><input type="radio" name="resolution" data-keep="resolution" value="480" /><span>480p</span></label>
+                <div class="seg">
+                  <label class="target"><input type="radio" name="resolution" data-keep="resolution" value="" checked /><span>Original</span></label>
+                  <label class="target"><input type="radio" name="resolution" data-keep="resolution" value="2160" /><span>4K</span></label>
+                  <label class="target"><input type="radio" name="resolution" data-keep="resolution" value="1080" /><span>1080p</span></label>
+                  <label class="target"><input type="radio" name="resolution" data-keep="resolution" value="720" /><span>720p</span></label>
+                  <label class="target"><input type="radio" name="resolution" data-keep="resolution" value="480" /><span>480p</span></label>
+                </div>
               </fieldset>
-              <div class="field-pair" data-show="trim">
-                <label class="field">
-                  <span>Trim start</span>
-                  <input id="trim-start" type="text" inputmode="decimal" autocomplete="off" placeholder="0:00" />
-                </label>
-                <label class="field">
-                  <span>Trim end</span>
-                  <input id="trim-end" type="text" inputmode="decimal" autocomplete="off" placeholder="End" />
-                </label>
+              <div class="trim" id="trim" data-show="trim">
+                <div class="tr-track" id="trim-track">
+                  <div class="tr-clip">
+                    <div class="tr-strip" id="trim-strip"></div>
+                    <i class="tr-before"></i><i class="tr-after"></i>
+                  </div>
+                  <i class="tr-span"></i>
+                  <i class="tr-handle tr-start" role="slider" tabindex="0" aria-label="Trim start" aria-valuemin="0"></i>
+                  <i class="tr-handle tr-end" role="slider" tabindex="0" aria-label="Trim end" aria-valuemin="0"></i>
+                </div>
+                <div class="field-pair even">
+                  <label class="field">
+                    <span>Start</span>
+                    <input class="input" id="trim-start" type="text" inputmode="decimal" autocomplete="off" placeholder="0:00" />
+                  </label>
+                  <label class="field">
+                    <span>End</span>
+                    <input class="input" id="trim-end" type="text" inputmode="decimal" autocomplete="off" placeholder="End" />
+                  </label>
+                </div>
               </div>
               <label class="check" data-show="has-audio">
-                <input id="remove-audio" data-keep="removeAudio" type="checkbox" />
-                <span>Remove audio</span>
+                <input id="remove-audio" data-keep="removeAudio" type="checkbox" role="switch" />
+                <span>Remove sound</span>
+                <i class="switch" aria-hidden="true"></i>
               </label>
 
               <fieldset class="choice" data-show="lossy-audio">
-                <legend>Bitrate</legend>
-                <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="" checked /><span>Auto</span></label>
-                <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="96000" /><span>96</span></label>
-                <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="128000" /><span>128</span></label>
-                <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="192000" /><span>192</span></label>
-                <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="256000" /><span>256</span></label>
-                <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="320000" /><span>320</span></label>
+                <legend>Bitrate, kbps</legend>
+                <div class="seg">
+                  <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="" checked /><span>Auto</span></label>
+                  <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="96000" /><span>96</span></label>
+                  <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="128000" /><span>128</span></label>
+                  <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="192000" /><span>192</span></label>
+                  <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="256000" /><span>256</span></label>
+                  <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="320000" /><span>320</span></label>
+                </div>
               </fieldset>
               <fieldset class="choice" data-show="audio">
                 <legend>Channels</legend>
-                <label class="target"><input type="radio" name="channels" data-keep="channels" value="" checked /><span>Same</span></label>
-                <label class="target"><input type="radio" name="channels" data-keep="channels" value="1" /><span>Mono</span></label>
-                <label class="target"><input type="radio" name="channels" data-keep="channels" value="2" /><span>Stereo</span></label>
+                <div class="seg">
+                  <label class="target"><input type="radio" name="channels" data-keep="channels" value="" checked /><span>Same</span></label>
+                  <label class="target"><input type="radio" name="channels" data-keep="channels" value="1" /><span>Mono</span></label>
+                  <label class="target"><input type="radio" name="channels" data-keep="channels" value="2" /><span>Stereo</span></label>
+                </div>
               </fieldset>
             </div>
           </div>
         </div>
 
-        <div class="action" id="action" data-flip>
-          <button class="primary" id="primary" type="button">Choose file</button>
-          <div class="progress" id="progress" role="progressbar" aria-label="Converting" aria-valuemin="0" aria-valuemax="100" hidden>
-            <div class="progress-fill" id="progress-fill"></div>
-            <span class="progress-text" id="progress-text"></span>
+        <div class="col status-wrap" id="status-wrap" hidden>
+          <div class="status" id="progress" aria-label="Converting" aria-valuemin="0" aria-valuemax="100">
+            <span id="progress-text"></span>
+            <span class="status-side" id="progress-side"></span>
           </div>
+        </div>
+
+        <div class="action" id="action" hidden>
+          <button class="btn grow" id="primary" type="button"><span>Convert</span></button>
           <button class="quiet" id="secondary" type="button" hidden></button>
         </div>
       </main>
 
-      <footer class="promise" data-flip><a href="/privacy">Files never leave this device.</a></footer>
+      <footer class="promise">
+        <a href="https://github.com/florentinf/rebake">Free and open source</a>
+        <a href="/privacy">Privacy</a>
+      </footer>
     </div>
 
     <input id="picker" type="file" multiple hidden

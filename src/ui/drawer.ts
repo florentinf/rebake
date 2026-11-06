@@ -1,4 +1,5 @@
 import type { Category } from '../core/formats';
+import { collapse } from './motion';
 
 export interface Facts {
   /** Tokens matched against each control's `data-show`. */
@@ -26,18 +27,17 @@ function store(kind: Category, saved: Saved) {
   } catch { /* private mode */ }
 }
 
-/** The "More" panel: closed by default, and each category keeps its own state. */
-export function createDrawer(drawer: HTMLElement, more: HTMLButtonElement, panel: HTMLElement) {
+/** The Options panel: closed by default, and each category keeps its own state. */
+export function createDrawer(more: HTMLButtonElement, panel: HTMLElement) {
   const controls = [...panel.querySelectorAll<HTMLInputElement>('[data-keep]')];
   const sections = [...panel.querySelectorAll<HTMLElement>('[data-show]')];
   const isToggle = (control: HTMLInputElement) => control.type === 'radio' || control.type === 'checkbox';
   const defaults = new Map(controls.map((control) => [control, isToggle(control) ? control.defaultChecked : control.defaultValue]));
   let kind: Category | null = null;
 
-  function setOpen(open: boolean) {
+  function setOpen(open: boolean, instant = false) {
     more.setAttribute('aria-expanded', String(open));
-    panel.toggleAttribute('inert', !open);
-    drawer.classList.toggle('open', open);
+    collapse(panel, open, instant);
   }
 
   function snapshot(): Saved {
@@ -63,7 +63,7 @@ export function createDrawer(drawer: HTMLElement, more: HTMLButtonElement, panel
         control.value = typeof saved === 'string' ? saved : String(defaults.get(control));
       }
     }
-    setOpen(open);
+    setOpen(open, true);
   }
 
   function save() {

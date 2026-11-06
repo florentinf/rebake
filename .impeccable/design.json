@@ -1,0 +1,611 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-06T11:57:13.606Z",
+  "title": "Design System: rebake",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "primary",
+        "displayName": "Developer Ink",
+        "canonical": "oklch(21% 0.005 70)",
+        "tonalRamp": [
+          "oklch(15% 0.005 70)",
+          "oklch(26% 0.005 70)",
+          "oklch(37% 0.005 70)",
+          "oklch(48% 0.005 70)",
+          "oklch(59% 0.005 70)",
+          "oklch(70% 0.005 70)",
+          "oklch(82% 0.005 70)",
+          "oklch(95% 0.005 70)"
+        ]
+      },
+      "on-ink": {
+        "role": "primary",
+        "displayName": "On Ink",
+        "canonical": "oklch(98% 0.004 85)",
+        "tonalRamp": [
+          "oklch(15% 0.004 85)",
+          "oklch(26% 0.004 85)",
+          "oklch(37% 0.004 85)",
+          "oklch(48% 0.004 85)",
+          "oklch(59% 0.004 85)",
+          "oklch(70% 0.004 85)",
+          "oklch(82% 0.004 85)",
+          "oklch(95% 0.004 85)"
+        ]
+      },
+      "work": {
+        "role": "secondary",
+        "displayName": "Safelight Amber",
+        "canonical": "oklch(65% 0.165 56)",
+        "tonalRamp": [
+          "oklch(15% 0.165 56)",
+          "oklch(26% 0.165 56)",
+          "oklch(37% 0.165 56)",
+          "oklch(48% 0.165 56)",
+          "oklch(59% 0.165 56)",
+          "oklch(70% 0.165 56)",
+          "oklch(82% 0.165 56)",
+          "oklch(95% 0.165 56)"
+        ]
+      },
+      "done": {
+        "role": "secondary",
+        "displayName": "Fixed Green",
+        "canonical": "oklch(50% 0.125 152)",
+        "tonalRamp": [
+          "oklch(15% 0.125 152)",
+          "oklch(26% 0.125 152)",
+          "oklch(37% 0.125 152)",
+          "oklch(48% 0.125 152)",
+          "oklch(59% 0.125 152)",
+          "oklch(70% 0.125 152)",
+          "oklch(82% 0.125 152)",
+          "oklch(95% 0.125 152)"
+        ]
+      },
+      "error": {
+        "role": "secondary",
+        "displayName": "Stop Red",
+        "canonical": "oklch(50% 0.175 25)",
+        "tonalRamp": [
+          "oklch(15% 0.175 25)",
+          "oklch(26% 0.175 25)",
+          "oklch(37% 0.175 25)",
+          "oklch(48% 0.175 25)",
+          "oklch(59% 0.175 25)",
+          "oklch(70% 0.175 25)",
+          "oklch(82% 0.175 25)",
+          "oklch(95% 0.175 25)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Fibre Paper",
+        "canonical": "oklch(97.9% 0.004 85)",
+        "tonalRamp": [
+          "oklch(15% 0.004 85)",
+          "oklch(26% 0.004 85)",
+          "oklch(37% 0.004 85)",
+          "oklch(48% 0.004 85)",
+          "oklch(59% 0.004 85)",
+          "oklch(70% 0.004 85)",
+          "oklch(82% 0.004 85)",
+          "oklch(95% 0.004 85)"
+        ]
+      },
+      "sheet": {
+        "role": "neutral",
+        "displayName": "Raised Sheet",
+        "canonical": "oklch(99.5% 0.002 85)",
+        "tonalRamp": [
+          "oklch(15% 0.002 85)",
+          "oklch(26% 0.002 85)",
+          "oklch(37% 0.002 85)",
+          "oklch(48% 0.002 85)",
+          "oklch(59% 0.002 85)",
+          "oklch(70% 0.002 85)",
+          "oklch(82% 0.002 85)",
+          "oklch(95% 0.002 85)"
+        ]
+      },
+      "well": {
+        "role": "neutral",
+        "displayName": "Well",
+        "canonical": "oklch(93.8% 0.005 80)",
+        "tonalRamp": [
+          "oklch(15% 0.005 80)",
+          "oklch(26% 0.005 80)",
+          "oklch(37% 0.005 80)",
+          "oklch(48% 0.005 80)",
+          "oklch(59% 0.005 80)",
+          "oklch(70% 0.005 80)",
+          "oklch(82% 0.005 80)",
+          "oklch(95% 0.005 80)"
+        ]
+      },
+      "well-2": {
+        "role": "neutral",
+        "displayName": "Well Hover",
+        "canonical": "oklch(90.6% 0.006 80)",
+        "tonalRamp": [
+          "oklch(15% 0.006 80)",
+          "oklch(26% 0.006 80)",
+          "oklch(37% 0.006 80)",
+          "oklch(48% 0.006 80)",
+          "oklch(59% 0.006 80)",
+          "oklch(70% 0.006 80)",
+          "oklch(82% 0.006 80)",
+          "oklch(95% 0.006 80)"
+        ]
+      },
+      "soft": {
+        "role": "neutral",
+        "displayName": "Soft",
+        "canonical": "oklch(93.8% 0.005 80)",
+        "tonalRamp": [
+          "oklch(15% 0.005 80)",
+          "oklch(26% 0.005 80)",
+          "oklch(37% 0.005 80)",
+          "oklch(48% 0.005 80)",
+          "oklch(59% 0.005 80)",
+          "oklch(70% 0.005 80)",
+          "oklch(82% 0.005 80)",
+          "oklch(95% 0.005 80)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line",
+        "canonical": "oklch(87.5% 0.007 75)",
+        "tonalRamp": [
+          "oklch(15% 0.007 75)",
+          "oklch(26% 0.007 75)",
+          "oklch(37% 0.007 75)",
+          "oklch(48% 0.007 75)",
+          "oklch(59% 0.007 75)",
+          "oklch(70% 0.007 75)",
+          "oklch(82% 0.007 75)",
+          "oklch(95% 0.007 75)"
+        ]
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Ink 2",
+        "canonical": "oklch(45% 0.012 65)",
+        "tonalRamp": [
+          "oklch(15% 0.012 65)",
+          "oklch(26% 0.012 65)",
+          "oklch(37% 0.012 65)",
+          "oklch(48% 0.012 65)",
+          "oklch(59% 0.012 65)",
+          "oklch(70% 0.012 65)",
+          "oklch(82% 0.012 65)",
+          "oklch(95% 0.012 65)"
+        ]
+      },
+      "ink-3": {
+        "role": "neutral",
+        "displayName": "Ink 3",
+        "canonical": "oklch(64% 0.01 70)",
+        "tonalRamp": [
+          "oklch(15% 0.01 70)",
+          "oklch(26% 0.01 70)",
+          "oklch(37% 0.01 70)",
+          "oklch(48% 0.01 70)",
+          "oklch(59% 0.01 70)",
+          "oklch(70% 0.01 70)",
+          "oklch(82% 0.01 70)",
+          "oklch(95% 0.01 70)"
+        ]
+      },
+      "ink-dark": {
+        "role": "primary",
+        "displayName": "Developer Ink (dark)",
+        "canonical": "oklch(94.5% 0.006 80)",
+        "tonalRamp": [
+          "oklch(15% 0.006 80)",
+          "oklch(26% 0.006 80)",
+          "oklch(37% 0.006 80)",
+          "oklch(48% 0.006 80)",
+          "oklch(59% 0.006 80)",
+          "oklch(70% 0.006 80)",
+          "oklch(82% 0.006 80)",
+          "oklch(95% 0.006 80)"
+        ]
+      },
+      "on-ink-dark": {
+        "role": "primary",
+        "displayName": "On Ink (dark)",
+        "canonical": "oklch(19% 0.004 70)",
+        "tonalRamp": [
+          "oklch(15% 0.004 70)",
+          "oklch(26% 0.004 70)",
+          "oklch(37% 0.004 70)",
+          "oklch(48% 0.004 70)",
+          "oklch(59% 0.004 70)",
+          "oklch(70% 0.004 70)",
+          "oklch(82% 0.004 70)",
+          "oklch(95% 0.004 70)"
+        ]
+      },
+      "work-dark": {
+        "role": "secondary",
+        "displayName": "Safelight Amber (dark)",
+        "canonical": "oklch(76% 0.15 60)",
+        "tonalRamp": [
+          "oklch(15% 0.15 60)",
+          "oklch(26% 0.15 60)",
+          "oklch(37% 0.15 60)",
+          "oklch(48% 0.15 60)",
+          "oklch(59% 0.15 60)",
+          "oklch(70% 0.15 60)",
+          "oklch(82% 0.15 60)",
+          "oklch(95% 0.15 60)"
+        ]
+      },
+      "done-dark": {
+        "role": "secondary",
+        "displayName": "Fixed Green (dark)",
+        "canonical": "oklch(79% 0.14 152)",
+        "tonalRamp": [
+          "oklch(15% 0.14 152)",
+          "oklch(26% 0.14 152)",
+          "oklch(37% 0.14 152)",
+          "oklch(48% 0.14 152)",
+          "oklch(59% 0.14 152)",
+          "oklch(70% 0.14 152)",
+          "oklch(82% 0.14 152)",
+          "oklch(95% 0.14 152)"
+        ]
+      },
+      "error-dark": {
+        "role": "secondary",
+        "displayName": "Stop Red (dark)",
+        "canonical": "oklch(73% 0.15 25)",
+        "tonalRamp": [
+          "oklch(15% 0.15 25)",
+          "oklch(26% 0.15 25)",
+          "oklch(37% 0.15 25)",
+          "oklch(48% 0.15 25)",
+          "oklch(59% 0.15 25)",
+          "oklch(70% 0.15 25)",
+          "oklch(82% 0.15 25)",
+          "oklch(95% 0.15 25)"
+        ]
+      },
+      "paper-dark": {
+        "role": "neutral",
+        "displayName": "Fibre Paper (dark)",
+        "canonical": "oklch(19% 0.004 70)",
+        "tonalRamp": [
+          "oklch(15% 0.004 70)",
+          "oklch(26% 0.004 70)",
+          "oklch(37% 0.004 70)",
+          "oklch(48% 0.004 70)",
+          "oklch(59% 0.004 70)",
+          "oklch(70% 0.004 70)",
+          "oklch(82% 0.004 70)",
+          "oklch(95% 0.004 70)"
+        ]
+      },
+      "sheet-dark": {
+        "role": "neutral",
+        "displayName": "Raised Sheet (dark)",
+        "canonical": "oklch(26% 0.005 70)",
+        "tonalRamp": [
+          "oklch(15% 0.005 70)",
+          "oklch(26% 0.005 70)",
+          "oklch(37% 0.005 70)",
+          "oklch(48% 0.005 70)",
+          "oklch(59% 0.005 70)",
+          "oklch(70% 0.005 70)",
+          "oklch(82% 0.005 70)",
+          "oklch(95% 0.005 70)"
+        ]
+      },
+      "well-dark": {
+        "role": "neutral",
+        "displayName": "Well (dark)",
+        "canonical": "oklch(15% 0.004 70)",
+        "tonalRamp": [
+          "oklch(15% 0.004 70)",
+          "oklch(26% 0.004 70)",
+          "oklch(37% 0.004 70)",
+          "oklch(48% 0.004 70)",
+          "oklch(59% 0.004 70)",
+          "oklch(70% 0.004 70)",
+          "oklch(82% 0.004 70)",
+          "oklch(95% 0.004 70)"
+        ]
+      },
+      "well-2-dark": {
+        "role": "neutral",
+        "displayName": "Well Hover (dark)",
+        "canonical": "oklch(30% 0.005 70)",
+        "tonalRamp": [
+          "oklch(15% 0.005 70)",
+          "oklch(26% 0.005 70)",
+          "oklch(37% 0.005 70)",
+          "oklch(48% 0.005 70)",
+          "oklch(59% 0.005 70)",
+          "oklch(70% 0.005 70)",
+          "oklch(82% 0.005 70)",
+          "oklch(95% 0.005 70)"
+        ]
+      },
+      "soft-dark": {
+        "role": "neutral",
+        "displayName": "Soft (dark)",
+        "canonical": "oklch(26% 0.005 70)",
+        "tonalRamp": [
+          "oklch(15% 0.005 70)",
+          "oklch(26% 0.005 70)",
+          "oklch(37% 0.005 70)",
+          "oklch(48% 0.005 70)",
+          "oklch(59% 0.005 70)",
+          "oklch(70% 0.005 70)",
+          "oklch(82% 0.005 70)",
+          "oklch(95% 0.005 70)"
+        ]
+      },
+      "line-dark": {
+        "role": "neutral",
+        "displayName": "Line (dark)",
+        "canonical": "oklch(32% 0.005 70)",
+        "tonalRamp": [
+          "oklch(15% 0.005 70)",
+          "oklch(26% 0.005 70)",
+          "oklch(37% 0.005 70)",
+          "oklch(48% 0.005 70)",
+          "oklch(59% 0.005 70)",
+          "oklch(70% 0.005 70)",
+          "oklch(82% 0.005 70)",
+          "oklch(95% 0.005 70)"
+        ]
+      },
+      "ink-2-dark": {
+        "role": "neutral",
+        "displayName": "Ink 2 (dark)",
+        "canonical": "oklch(73% 0.01 75)",
+        "tonalRamp": [
+          "oklch(15% 0.01 75)",
+          "oklch(26% 0.01 75)",
+          "oklch(37% 0.01 75)",
+          "oklch(48% 0.01 75)",
+          "oklch(59% 0.01 75)",
+          "oklch(70% 0.01 75)",
+          "oklch(82% 0.01 75)",
+          "oklch(95% 0.01 75)"
+        ]
+      },
+      "ink-3-dark": {
+        "role": "neutral",
+        "displayName": "Ink 3 (dark)",
+        "canonical": "oklch(52% 0.01 70)",
+        "tonalRamp": [
+          "oklch(15% 0.01 70)",
+          "oklch(26% 0.01 70)",
+          "oklch(37% 0.01 70)",
+          "oklch(48% 0.01 70)",
+          "oklch(59% 0.01 70)",
+          "oklch(70% 0.01 70)",
+          "oklch(82% 0.01 70)",
+          "oklch(95% 0.01 70)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "route": {
+        "displayName": "Route",
+        "purpose": "The FORMAT → FORMAT title. Shrinks to fit and never wraps."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "The zone title and text page headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Everything that reads. Tabular figures on."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Format names."
+      },
+      "rider": {
+        "displayName": "Rider",
+        "purpose": "The percentage under the arrow's tip."
+      },
+      "target": {
+        "displayName": "Target",
+        "purpose": "The format picker, fluid within fixed-height cells."
+      },
+      "print": {
+        "displayName": "Print",
+        "purpose": "Fallback format label inside a thumbnail; filenames remain body size."
+      }
+    },
+    "shadows": [
+      {
+        "name": "ply",
+        "value": "0 1px 2px oklch(25% 0.02 60 / 0.1), 0 3px 10px oklch(25% 0.02 60 / 0.07)",
+        "purpose": "The one raised rank, in light."
+      },
+      {
+        "name": "ply-dark",
+        "value": "0 1px 2px oklch(5% 0 0 / 0.5), 0 3px 10px oklch(5% 0 0 / 0.3)",
+        "purpose": "The one raised rank, in dark."
+      },
+      {
+        "name": "halo",
+        "value": "color-mix(in oklch, var(--ink) 9%, transparent)",
+        "purpose": "The colour of the ring around a held slider thumb."
+      }
+    ],
+    "motion": [
+      {
+        "name": "snap",
+        "value": "spring response 0.22 s, damping 1",
+        "purpose": "Controls: sliding mark, slider."
+      },
+      {
+        "name": "glide",
+        "value": "spring response 0.42 s, damping 1",
+        "purpose": "Layout: collapse, row shifts, the negative."
+      },
+      {
+        "name": "chase",
+        "value": "spring response 0.62 s, damping 1",
+        "purpose": "Real progress: arrow tip, print developing."
+      },
+      {
+        "name": "flick",
+        "value": "spring response 0.40 s, damping 0.78",
+        "purpose": "Arrival: the arrow's fold, rows landing from a drop."
+      },
+      {
+        "name": "flick-curve",
+        "value": "linear(0, 0.012, 0.05 2.4%, 0.197 5.4%, 0.742 15%, 0.933 20.3%, 1.031 25.4%, 1.075 30.6%, 1.087 36.5%, 1.06 49%, 1.012 69%, 1)",
+        "purpose": "Flick as a CSS curve, for the switch and the row tick."
+      },
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Entrances and small CSS movement."
+      },
+      {
+        "name": "fast",
+        "value": "110ms",
+        "purpose": "Hover colour and press feedback."
+      },
+      {
+        "name": "base",
+        "value": "200ms",
+        "purpose": "Background and colour changes."
+      },
+      {
+        "name": "slow",
+        "value": "420ms",
+        "purpose": "Route colour changes and the Add files fill."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "narrow",
+        "value": "max-width: 40rem"
+      },
+      {
+        "name": "short",
+        "value": "max-height: 30rem"
+      },
+      {
+        "name": "touch",
+        "value": "pointer: coarse"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one action on screen, such as Convert.",
+      "html": "<button class=\"ds-btn\" type=\"button\"><span>Convert to JPG</span></button>",
+      "css": ".ds-btn { position: relative; display: inline-grid; place-items: center; height: 3.25rem; padding-inline: 1.5rem; overflow: hidden; border: 0; border-radius: var(--r-m); background: var(--ink); color: var(--on-ink); font: 600 1rem/1.5 \"Hanken Grotesk\", system-ui, sans-serif; cursor: pointer; transition: transform var(--fast) ease; } .ds-btn::before { content: \"\"; position: absolute; inset: 0; background: var(--on-ink); opacity: 0; transition: opacity var(--fast); } .ds-btn:hover::before { opacity: 0.1; } .ds-btn:active { transform: scale(0.98); transition-duration: 40ms; } .ds-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; } .ds-btn > span { position: relative; }"
+    },
+    {
+      "name": "Raised Button",
+      "kind": "button",
+      "refersTo": "button-raised",
+      "description": "Choose files, on the drop zone.",
+      "html": "<button class=\"ds-btn ds-btn-raised\" type=\"button\"><span>Choose files</span></button>",
+      "css": ".ds-btn { position: relative; display: inline-grid; place-items: center; height: 3.25rem; padding-inline: 1.5rem; overflow: hidden; border: 0; border-radius: var(--r-m); background: var(--ink); color: var(--on-ink); font: 600 1rem/1.5 \"Hanken Grotesk\", system-ui, sans-serif; cursor: pointer; transition: transform var(--fast) ease; } .ds-btn::before { content: \"\"; position: absolute; inset: 0; background: var(--on-ink); opacity: 0; transition: opacity var(--fast); } .ds-btn:hover::before { opacity: 0.1; } .ds-btn:active { transform: scale(0.98); transition-duration: 40ms; } .ds-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; } .ds-btn > span { position: relative; } .ds-btn-raised { height: 2.75rem; padding-inline: 1.125rem; background: var(--sheet); color: var(--ink); box-shadow: var(--ply); } .ds-btn-raised::before { background: var(--ink); } .ds-btn-raised:hover::before { opacity: 0.04; }"
+    },
+    {
+      "name": "Soft Button",
+      "kind": "button",
+      "refersTo": "button-soft",
+      "description": "Once the job runs the page stops pushing: Cancel, Convert another.",
+      "html": "<button class=\"ds-btn ds-btn-soft\" type=\"button\"><span>Cancel</span></button>",
+      "css": ".ds-btn { position: relative; display: inline-grid; place-items: center; height: 3.25rem; padding-inline: 1.5rem; overflow: hidden; border: 0; border-radius: var(--r-m); background: var(--ink); color: var(--on-ink); font: 600 1rem/1.5 \"Hanken Grotesk\", system-ui, sans-serif; cursor: pointer; transition: transform var(--fast) ease; } .ds-btn::before { content: \"\"; position: absolute; inset: 0; background: var(--on-ink); opacity: 0; transition: opacity var(--fast); } .ds-btn:hover::before { opacity: 0.1; } .ds-btn:active { transform: scale(0.98); transition-duration: 40ms; } .ds-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; } .ds-btn > span { position: relative; } .ds-btn-soft { background: var(--soft); color: var(--ink); } .ds-btn-soft::before { background: var(--ink); } .ds-btn-soft:hover::before { opacity: 0.05; }"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "A secondary action beside the soft button: Download again.",
+      "html": "<button class=\"ds-quiet\" type=\"button\">Download again</button>",
+      "css": ".ds-quiet { min-height: 3.25rem; padding-inline: 1rem; border: 0; border-radius: var(--r-m); background: none; color: var(--ink-2); font: 400 1rem/1.5 \"Hanken Grotesk\", system-ui, sans-serif; cursor: pointer; transition: color var(--fast), background-color var(--fast); } .ds-quiet:hover { color: var(--ink); background: var(--well); } .ds-quiet:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }"
+    },
+    {
+      "name": "Drop Zone",
+      "kind": "custom",
+      "refersTo": "drop-zone",
+      "description": "The first screen: a well with four corner marks. On a drag it turns ink from the pointer.",
+      "html": "<div class=\"ds-zone\"><i class=\"ds-c ds-a\"></i><i class=\"ds-c ds-b\"></i><i class=\"ds-c ds-d\"></i><i class=\"ds-c ds-e\"></i><p class=\"ds-zone-title\">Drop files to convert</p><p class=\"ds-zone-line\">Nothing is uploaded. It all happens on your device.</p></div>",
+      "css": ".ds-zone { position: relative; display: grid; place-items: center; align-content: center; gap: 0.375rem; min-height: 17.5rem; padding: 2rem 1.5rem; border-radius: var(--r-l); background: var(--well); color: var(--ink); text-align: center; font-family: \"Hanken Grotesk\", system-ui, sans-serif; cursor: pointer; transition: background-color var(--base), color var(--base); } .ds-zone:hover { background: var(--well-2); } .ds-zone:active { background: var(--ink); color: var(--on-ink); } .ds-zone-title { margin: 0; font-size: 1.875rem; font-weight: 600; letter-spacing: -0.022em; line-height: 1.2; } .ds-zone-line { margin: 0; color: var(--ink-2); } .ds-zone:active .ds-zone-line { color: var(--on-ink); } .ds-c { position: absolute; width: 20px; height: 20px; border: 0 solid var(--ink-3); } .ds-a { left: 14px; top: 14px; border-width: 2px 0 0 2px; border-top-left-radius: 6px; } .ds-b { right: 14px; top: 14px; border-width: 2px 2px 0 0; border-top-right-radius: 6px; } .ds-d { left: 14px; bottom: 14px; border-width: 0 0 2px 2px; border-bottom-left-radius: 6px; } .ds-e { right: 14px; bottom: 14px; border-width: 0 2px 2px 0; border-bottom-right-radius: 6px; }"
+    },
+    {
+      "name": "Route",
+      "kind": "custom",
+      "description": "The title: format, arrow, format. The arrow is the progress bar and folds into the tick. Shown here while working, in amber.",
+      "html": "<div class=\"ds-route\"><span>HEIC</span><svg class=\"ds-arrow\" viewBox=\"0 0 57 48\" aria-hidden=\"true\"><path d=\"M2.4 24.7H57M40.8 8.5 57 24.7M40.8 40.9 57 24.7\" /></svg><span class=\"ds-to\">JPG</span></div>",
+      "css": ".ds-route { display: flex; align-items: center; gap: 0.2em; font: 600 3.75rem/1 \"Hanken Grotesk\", system-ui, sans-serif; letter-spacing: -0.03em; color: var(--ink); white-space: nowrap; } .ds-arrow { flex: none; width: 0.95em; height: 0.8em; overflow: visible; fill: none; stroke: var(--work); stroke-width: 5.28; stroke-linecap: round; stroke-linejoin: round; } .ds-to { color: var(--ink-3); }"
+    },
+    {
+      "name": "Target Picker",
+      "kind": "custom",
+      "refersTo": "segment-large",
+      "description": "A well of native radios with one ink mark.",
+      "html": "<div class=\"ds-seg\"><label class=\"ds-target\"><input type=\"radio\" name=\"ds-target\" checked /><span>JPG</span></label><label class=\"ds-target\"><input type=\"radio\" name=\"ds-target\" /><span>PNG</span></label><label class=\"ds-target\"><input type=\"radio\" name=\"ds-target\" /><span>WebP</span></label></div>",
+      "css": ".ds-seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; padding: 4px; border-radius: var(--r-l); background: var(--well); } .ds-target { position: relative; display: block; cursor: pointer; } .ds-target input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; } .ds-target span { display: grid; place-items: center; height: 2.75rem; border-radius: var(--r-m); color: var(--ink-2); font: 600 1rem/1.5 \"Hanken Grotesk\", system-ui, sans-serif; transition: color var(--fast), transform var(--fast) ease; } .ds-target input:hover + span { color: var(--ink); } .ds-target input:active + span { transform: scale(0.96); } .ds-target input:checked + span { background: var(--ink); color: var(--on-ink); } .ds-target input:focus-visible + span { outline: 2px solid var(--ink); outline-offset: 1px; }"
+    },
+    {
+      "name": "Options Head",
+      "kind": "custom",
+      "description": "Folded options that still show their values.",
+      "html": "<button class=\"ds-head\" type=\"button\" aria-expanded=\"false\"><b>Options</b><span class=\"ds-summary\">Quality 82 · Original size · Location removed</span><svg class=\"ds-chevron\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M3.5 6 8 10.5 12.5 6\" /></svg></button>",
+      "css": ".ds-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 0.75rem; width: 100%; min-height: 3.25rem; padding: 0; border: 0; background: none; color: var(--ink); font: 400 1rem/1.5 \"Hanken Grotesk\", system-ui, sans-serif; text-align: start; cursor: pointer; } .ds-head b { font-weight: 500; } .ds-summary { color: var(--ink-2); line-height: 1.35; transition: color var(--fast); } .ds-head:hover .ds-summary { color: var(--ink); } .ds-head:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; border-radius: 4px; } .ds-chevron { width: 1rem; height: 1rem; fill: none; stroke: var(--ink-2); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "A field pressed into the page.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"All, or like 1-3, 5\" aria-label=\"Pages\" />",
+      "css": ".ds-input { width: 100%; height: 2.75rem; padding-inline: 0.75rem; border: 0; border-radius: var(--r-s); background: var(--well); color: var(--ink); font: 400 1rem/1.5 \"Hanken Grotesk\", system-ui, sans-serif; transition: box-shadow var(--fast), background-color var(--fast); } .ds-input::placeholder { color: var(--ink-2); opacity: 1; } .ds-input:hover { background: var(--well-2); } .ds-input:focus { outline: none; background: var(--sheet); box-shadow: 0 0 0 1.5px var(--ink); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Darkroom",
+    "overview": "rebake is a tool, not a page. A print develops in the room you are standing in, and nothing goes to a lab. One object, the `FORMAT → FORMAT` title, carries the whole job from pick to tick.\n\nThe drop zone is the first screen: wordmark, zone, All formats, footer, and no headline above it. The column then changes in place. Screens are never swapped.",
+    "keyCharacteristics": [
+      "Fibre paper and black ink in light, the unlit room in dark. Both follow the system.",
+      "Colour means state, and nothing else.",
+      "The arrow is the progress bar, and it folds into the tick."
+    ],
+    "rules": [
+      {
+        "name": "The State Colour Rule",
+        "body": "Amber is working, green is done, red is error. Actions, focus and selection are ink. The only other colour on screen is the visitor's own pictures.",
+        "section": "colors"
+      },
+      {
+        "name": "The Negative Rule",
+        "body": "The drop effect has no colour. The zone becomes its own negative, ink spreading from the pointer. With a file open, the Add files row fills with ink the same way.",
+        "section": "colors"
+      }
+    ],
+    "dos": [
+      "Do keep native inputs as the real controls. Range, radio and checkbox stay in place, transparent, so the keyboard, assistive tech and saved state keep working.",
+      "Do show only measured progress.",
+      "Do keep 44 px touch targets."
+    ],
+    "donts": [
+      "Don't put style attributes or `<style>` in markup. The CSP has no `style-src`, so `default-src 'self'` blocks them. Script may still set `element.style`, and the springs depend on it.",
+      "Don't add an accent, or colour the drop effect.",
+      "Don't give the zone a dashed outline. The arrow's dotted track stays: it marks the distance left.",
+      "Don't set Hanken Grotesk outside 400–600. The file stops there and synthesis is off."
+    ]
+  }
+}

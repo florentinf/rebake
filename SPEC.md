@@ -11,7 +11,7 @@ Principles, in priority order:
 1. Nothing leaves the tab. No uploads, no third-party origins, no analytics, no fallback server.
 2. Provable, not promised. Open source (MIT), a CSP that blocks outbound connections, works offline.
 3. Just works. Only offer a target format this browser can actually produce. Fail loudly instead of returning a wrong file.
-4. Insanely simple. One drop zone, smart defaults, settings tucked into a hidden drawer.
+4. Insanely simple. One drop zone, smart defaults, settings folded away with their current values still showing.
 5. Narrow and excellent beats broad and flaky. About 40 common conversions in v1, not 250 formats.
 
 ## v1 scope
@@ -49,7 +49,7 @@ The claim is "your files never leave this tab", and every part of it can be chec
 
 - One origin: every script, WASM binary and font is served from the converter's own domain. No CDN, no Google Fonts, no third-party anything.
 - CSP: `default-src 'self'; connect-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; worker-src 'self' blob:; script-src 'self' 'wasm-unsafe-eval'; object-src 'none'; base-uri 'none'; form-action 'none'`. `connect-src 'self'` exists only so engines can be fetched; there is no endpoint that accepts data.
-- No analytics, no cookies. localStorage holds only the last-used target format and the "more" drawer's state per category.
+- No analytics, no cookies. localStorage holds only the last-used target format and the Options panel's state per category.
 - Offline test, stated on the page: open a converter once, turn on airplane mode, then convert a file of that type.
 - Open source under MIT. GPL and LGPL engines (pandoc, LAME, libavcodec) ship as separate files with links to their source.
 - Phase 2: enrol in [WEBCAT](https://github.com/freedomofpress/webcat). It signs a manifest of every served file, so users with the extension can confirm the code matches the public release.
@@ -60,10 +60,10 @@ The whole flow is three actions: drop, pick, done.
 
 1. Drop, paste or pick one or more files anywhere on the page.
 2. The page shows the detected format and only the targets that work in this browser. The most likely target is preselected, for example HEIC to JPG or MOV to MP4.
-3. Convert. A progress bar with an honest estimate replaces the button. Cancel always works.
+3. Convert. The arrow in the title grows into a progress bar with an honest estimate, then folds into a tick. Cancel always works.
 4. The file downloads automatically, named after the original with the new extension. A batch downloads as one ZIP. A batch of images to PDF gives one PDF.
 
-The hidden "more" drawer is collapsed by default and remembered per category:
+The Options panel is collapsed by default and remembered per category. Folded, it still lists what is set:
 
 | Category | Options |
 | --- | --- |

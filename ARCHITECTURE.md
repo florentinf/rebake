@@ -122,6 +122,10 @@ Memory stays flat because finished bytes never sit in the worker. `core/spool.ts
 
 `pages()` in `vite.config.ts` writes one HTML file per routing-table row from the built `index.html`, then `privacy.html`, `404.html`, `sitemap.xml` and `robots.txt`. Caddy serves them with `try_files {path} {path}.html`. The app reads `location.pathname` itself, so offline the shell stands in for any converter page. Only `/` and `/privacy` are precached.
 
+## The interface
+
+Everything that moves goes through `ui/motion.ts`, one spring engine, so any motion can be interrupted from wherever it is. `ui/route.ts` is the title: three strokes that make the arrow, grow into the progress bar and fold into the tick. `ui/sheet.ts` is the file list and `ui/thumbs.ts` makes its pictures, one at a time, leaving a text tile for anything the browser can't draw. `ui/controls.ts` keeps native inputs as the real controls and layers the sliding mark, the slider and the trim timeline over them. The CSP has no `style-src`, so style attributes in markup are blocked: set styles through `element.style` only.
+
 ## The drawer
 
 `ui/drawer.ts`. Controls carry `data-show` (tokens `syncOptions()` turns on) and `data-keep` (the key they're remembered under). State lives in `localStorage` as `rebake.more.<category>`, wrapped in try/catch, and the drawer swaps it when the target moves to another category. Trim and page ranges are never remembered, because they belong to one file. Sheet chips are built per workbook from `inspection.sheets`.

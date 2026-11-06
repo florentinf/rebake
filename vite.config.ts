@@ -88,11 +88,18 @@ function textPage(html: string, title: string, description: string, path: string
   return swap(head, /<body[^>]*>[\s\S]*<\/body>/, `<body>\n    <div class="page text-page">\n      <header class="mark"><a href="/">rebake</a></header>\n      <main class="prose">\n${body}\n      </main>\n    </div>\n  </body>`);
 }
 
-const PRIVACY = `        <h1>Privacy</h1>
-        <p>rebake runs in your browser. The server sends the code once, then every file is read and written on your device, in this tab, and is never uploaded.</p>
-        <p>There are no logs, no analytics and no cookies. The Content-Security-Policy stops the page from connecting to anything but this site, and nothing here accepts data. The only thing kept in your browser is your last format and the state of the More panel.</p>
-        <p>Test it: open a converter once, turn on airplane mode, then convert a file of that type.</p>
-        <p>The code is open: <a href="${SOURCE}">${SOURCE.replace('https://', '')}</a>.</p>
+const PRIVACY = `        <h1>Your files stay on your device.</h1>
+        <p>rebake runs in your browser. The server sends the code once. After that, every file is read and written in this tab and never uploaded.</p>
+        <h2>Check it yourself</h2>
+        <ul>
+          <li>Convert a file once, turn on airplane mode, then convert another of the same type.</li>
+          <li>Open your browser's developer tools and watch the Network tab while you convert. The only requests are for rebake's own code.</li>
+          <li>Read the Content-Security-Policy header. It stops the page from connecting to anything but this site, and nothing here accepts data.</li>
+        </ul>
+        <h2>What rebake keeps</h2>
+        <p>Your last format and your option settings, in this browser only. There are no logs, no analytics and no cookies.</p>
+        <h2>Read the code</h2>
+        <p>rebake is open source under the MIT licence: <a href="${SOURCE}">${SOURCE.replace('https://', '')}</a>.</p>
         <p>Contact: <a href="mailto:contact@florentinf.dev">contact@florentinf.dev</a></p>`;
 
 const NOT_FOUND = `        <h1>Not found</h1>
@@ -117,11 +124,13 @@ function pages(): Plugin {
         const to = FORMATS[link.to].label;
         const line = linkLine(link);
         let page = withHead(html, `${from} to ${to} converter · rebake`, `${line} ${PROMISE}`, path);
-        page = swap(page, '<span id="from">Drop a file</span>', `<span id="from">${escapeHtml(from)}</span>`);
-        page = swap(page, 'aria-hidden="true" hidden>', 'aria-hidden="true">');
-        page = swap(page, 'class="vh" hidden>to', 'class="vh">to');
+        page = swap(page, 'class="route" id="title" tabindex="-1" hidden>', 'class="route" id="title" tabindex="-1">');
+        page = swap(page, '<span id="from"></span>', `<span id="from">${escapeHtml(from)}</span>`);
         page = swap(page, '<span id="to" class="to"></span>', `<span id="to" class="to">${escapeHtml(to)}</span>`);
-        page = swap(page, '<p class="meta" id="meta" data-flip hidden></p>', `<p class="meta" id="meta" data-flip>${escapeHtml(line)}</p>`);
+        const prompt = `Drop ${escapeHtml(from)} files`;
+        // The route is this page's heading, so the zone's prompt steps down to a paragraph.
+        page = swap(page, '<h1 class="zone-title" id="zone-title">Drop files to convert</h1>', `<p class="zone-title" id="zone-title">${prompt}</p>`);
+        page = swap(page, 'id="negative-title">Drop files to convert<', `id="negative-title">${prompt}<`);
         emit(`${path.slice(1)}.html`, page);
         paths.push(path);
       }

@@ -21,7 +21,7 @@ test('converts with no network after one online visit', async ({ page, context }
 
   await context.setOffline(true);
   await page.reload();
-  await expect(page.locator('#from')).toBeVisible();
+  await expect(page.locator('#choose')).toBeVisible();
   await open(page, heic ? 'sample.heic' : 'sample.png');
   const { bytes } = await convertAndRead(page, 'jpg');
   expect((await readHeader(bytes)).format).toBe('jpg');
@@ -47,7 +47,7 @@ test('every category converts with no network after one visit', async ({ page, c
   await page.reload();
   // A deep link has never been fetched, and the shell has to stand in for it.
   if (browserName !== 'firefox') await page.goto('/docx-to-pdf');
-  await expect(page.locator('#primary')).toBeVisible();
+  await expect(page.locator('#choose')).toBeVisible();
   for (const [file, target] of jobs) {
     await open(page, file);
     const { bytes } = await convertAndRead(page, target, 100_000);

@@ -38,7 +38,7 @@ test('every control is at least 44 px tall', async ({ page }) => {
   await open(page, 'sample.pdf');
   await page.click('#more');
   await settled(page);
-  for (const selector of ['#primary', '#more', '.mark a', '.promise a', '#pages']) {
+  for (const selector of ['#primary', '#more', '.mark a', '.promise a >> nth=0', '#pages', '.add', '.row-remove']) {
     const box = await page.locator(selector).boundingBox();
     expect(Math.round(box!.height), selector).toBeGreaterThanOrEqual(44);
   }
@@ -52,14 +52,14 @@ test('keyboard order runs from the mark through the job to the footer', async ({
   await settled(page);
   await page.locator('.mark a').focus();
   const order: string[] = [];
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 7; i++) {
     await page.keyboard.press('Tab');
     order.push(await page.evaluate(() => {
       const element = document.activeElement as HTMLInputElement;
       return element.id || element.name || element.textContent || '';
     }));
   }
-  expect(order).toEqual(['target', 'more', 'pages', 'primary', 'Files never leave this device.']);
+  expect(order).toEqual(['', 'Add files', 'target', 'more', 'pages', 'primary', 'Free and open source']);
 });
 
 test('focus lands on the next action after each state change', async ({ page }) => {
@@ -114,7 +114,7 @@ test('THIRD_PARTY.md names every engine and every runtime library', async () => 
     expect(notice, pkg).toContain(names[pkg]!);
     expect(notice, `${pkg} version`).toContain(version.toLowerCase());
   }
-  for (const library of ['mediabunny', 'client-zip', 'gifenc', 'papa parse', 'yaml', 'browser_wasi_shim', 'fflate', 'schibsted grotesk']) {
+  for (const library of ['mediabunny', 'client-zip', 'gifenc', 'papa parse', 'yaml', 'browser_wasi_shim', 'fflate', 'hanken grotesk']) {
     expect(notice, library).toContain(library);
   }
 });

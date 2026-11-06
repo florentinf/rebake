@@ -53,7 +53,7 @@ test('a damaged file fails loudly and leaves the page usable', async ({ page }) 
   await convertAndRead(page, 'jpg');
 });
 
-test('dropping a file on the window opens it, with the frame shown during drag', async ({ page }) => {
+test('dropping a file on the window opens it, with the zone reacting during drag', async ({ page }) => {
   await page.goto('/');
   const transfer = await page.evaluateHandle(async () => {
     const data = new DataTransfer();

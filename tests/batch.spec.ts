@@ -61,7 +61,6 @@ test('audio and video share only audio targets', async ({ page }) => {
 
 test('an unreadable file in a batch is skipped and said so', async ({ page }) => {
   await page.setInputFiles('#picker', ['sample.png', 'sample.jpg', 'notes.txt'].map(fixture));
-  await expect(page.locator('#meta')).toContainText('2 files');
   await expect(page.locator('#meta')).toContainText('1 skipped');
 });
 
@@ -71,7 +70,7 @@ test('cancel works during a batch, and the page stays usable', async ({ page }) 
   test.skip(await page.locator('input[name=target][value=webm]').count() === 0, 'this browser cannot write WebM');
   await pick(page, 'webm');
   await page.click('#primary');
-  await expect(page.locator('#progress-text')).toContainText('1/2');
+  await expect(page.locator('#progress-text')).toContainText('1 of 2');
   await page.keyboard.press('Escape');
   await expect(page.locator('body')).toHaveAttribute('data-state', 'file');
   expect(await page.evaluate(() => window.__saved!.length)).toBe(0);

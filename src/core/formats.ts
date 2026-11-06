@@ -34,7 +34,7 @@ export const FORMATS: Record<FormatId, FormatInfo> = {
   gif: { label: 'GIF', extension: 'gif', mime: 'image/gif', category: 'image' },
   tiff: { label: 'TIFF', extension: 'tiff', mime: 'image/tiff', category: 'image', aliases: ['tif'] },
   heic: { label: 'HEIC', extension: 'heic', mime: 'image/heic', category: 'image', aliases: ['heif', 'hif'] },
-  jxl: { label: 'JXL', extension: 'jxl', mime: 'image/jxl', category: 'image', lossy: true },
+  jxl: { label: 'JPEG XL', extension: 'jxl', mime: 'image/jxl', category: 'image', lossy: true },
   svg: { label: 'SVG', extension: 'svg', mime: 'image/svg+xml', category: 'image' },
   ico: { label: 'ICO', extension: 'ico', mime: 'image/x-icon', category: 'image', aliases: ['cur'] },
   mp4: { label: 'MP4', extension: 'mp4', mime: 'video/mp4', category: 'video', aliases: ['m4v'], family: 'isobmff' },

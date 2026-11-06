@@ -23,7 +23,7 @@ Every engine is served from rebake's own origin as a separate file, in `vendor/`
 | [fflate](https://github.com/101arrowz/fflate) | 0.8.3 | MIT | [github.com/101arrowz/fflate](https://github.com/101arrowz/fflate) | Unpacking pandoc's extracted media |
 | [client-zip](https://github.com/Touffy/client-zip) | 2.5.1 | MIT | [github.com/Touffy/client-zip](https://github.com/Touffy/client-zip) | Batch ZIPs |
 | [gifenc](https://github.com/mattdesl/gifenc) | 1.0.3 | MIT | [github.com/mattdesl/gifenc](https://github.com/mattdesl/gifenc) | Video to GIF |
-| [Schibsted Grotesk](https://github.com/schibsted/schibsted-grotesk) | 1.x | OFL-1.1 | [github.com/schibsted/schibsted-grotesk](https://github.com/schibsted/schibsted-grotesk) | Interface type, subset by `scripts/subset-font.sh` |
+| [Hanken Grotesk](https://github.com/marcologous/hanken-grotesk) | 5.3 (Fontsource) | OFL-1.1 | [github.com/marcologous/hanken-grotesk](https://github.com/marcologous/hanken-grotesk) | Interface type, subset by `scripts/subset-font.sh` |
 
 wasm-vips bundles further libraries (aom, libjxl, cgif, mozjpeg, libwebp, resvg and others). Their versions and licences are in `vendor/vips/THIRD-PARTY-NOTICES.md`.
 

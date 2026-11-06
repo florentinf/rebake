@@ -35,14 +35,14 @@ test('the drawer shows only what applies', async ({ page }) => {
   await open(page, 'h264-aac.mov');
   await page.click(moreButton);
   await expect(page.getByText('Max resolution')).toBeVisible();
-  await expect(page.getByText('Remove audio')).toBeVisible();
-  await expect(page.getByText('Bitrate')).toBeHidden();
+  await expect(page.getByText('Remove sound')).toBeVisible();
+  await expect(page.locator('legend', { hasText: 'Bitrate' })).toBeHidden();
   await pick(page, 'mp3');
-  await expect(page.getByText('Bitrate')).toBeVisible();
-  await expect(page.getByText('Channels')).toBeVisible();
-  await expect(page.getByText('Trim start')).toBeVisible();
+  await expect(page.locator('legend', { hasText: 'Bitrate' })).toBeVisible();
+  await expect(page.locator('legend', { hasText: 'Channels' })).toBeVisible();
+  await expect(page.locator('#trim-start')).toBeVisible();
   await pick(page, 'flac');
-  await expect(page.getByText('Bitrate')).toBeHidden();
+  await expect(page.locator('legend', { hasText: 'Bitrate' })).toBeHidden();
   await page.keyboard.press('Escape');
   await open(page, 'silent.mp4');
   await expect(page.locator('input[name=target][value=mp3]')).toHaveCount(0);
@@ -51,7 +51,7 @@ test('the drawer shows only what applies', async ({ page }) => {
 test('remove audio', async ({ page }) => {
   await open(page, 'h264-aac.mov');
   await page.click(moreButton);
-  await page.getByLabel('Remove audio').check();
+  await page.getByLabel('Remove sound').check();
   const { bytes, name } = await convertAndRead(page, 'mp4');
   const media = inspectBytes(bytes, name);
   expect(media.audio).toBeUndefined();
@@ -118,9 +118,11 @@ test('an impossible trim blocks Convert with a plain reason', async ({ page }) =
 test('GIF has a clear limit, and trimming gets under it', async ({ page }) => {
   await open(page, 'long.mp4');
   await pick(page, 'gif');
-  await expect(page.locator('#meta.error')).toHaveText('GIF is limited to 15 s. Trim it under More.');
+  await expect(page.locator('#meta.error')).toContainText('GIF works up to 15 s.');
   await expect(page.locator('#primary')).toBeDisabled();
-  await page.click(moreButton);
+  await page.getByRole('button', { name: 'Trim to 15 s' }).click();
+  await expect(page.locator('#trim-end')).toHaveValue('0:15');
+  await expect(page.locator('#more')).toHaveAttribute('aria-expanded', 'true');
   await page.fill('#trim-end', '4');
   await expect(page.locator('#primary')).toBeEnabled();
   const { bytes, name } = await convertAndRead(page, 'gif');
@@ -208,7 +210,8 @@ test('video progress is honest and cancel returns to the file', async ({ page })
   await pick(page, 'webm');
   await page.click('#primary');
   await expect(page.locator('body')).toHaveAttribute('data-state', 'converting');
-  await page.click('#secondary');
+  // This clip converts in under a second, faster than the button settles into place.
+  await page.locator('#secondary').dispatchEvent('click');
   await expect(page.locator('body')).toHaveAttribute('data-state', 'file');
   expect(await page.evaluate(() => window.__saved!.length)).toBe(0);
   const { bytes, name } = await convertAndRead(page, 'mkv');

@@ -161,6 +161,6 @@ test('the size shows before the first load on a phone', async ({ browser }) => {
   });
   await page.goto('/');
   await open(page, 'sample.docx');
-  await expect(page.locator('#meta')).toContainText(/\d+ MB download/);
+  await expect(page.locator('#meta')).toContainText(/First use downloads [\d.]+ MB/);
   await context.close();
 });

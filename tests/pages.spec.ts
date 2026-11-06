@@ -32,7 +32,6 @@ test('a deep link preselects its target, over the remembered one', async ({ page
   await page.goto('/heic-to-webp');
   await expect(page.locator('#from')).toHaveText('HEIC');
   await expect(page.locator('#to')).toHaveText('WebP');
-  await expect(page.locator('#meta')).toHaveText('Convert HEIC to WebP in your browser.');
   await open(page, 'sample.heic');
   await expect(page.locator('input[name=target]:checked')).toHaveValue('webp');
   expect(await page.evaluate(() => localStorage.getItem('rebake.target'))).toBe('png');
@@ -52,12 +51,12 @@ test('convert another returns to the deep link', async ({ page }) => {
   await page.click('#primary');
   await expect(page.locator('#from')).toHaveText('PNG');
   await expect(page.locator('#to')).toHaveText('JPG');
-  await expect(page.locator('#meta')).toHaveText('Convert PNG to JPG in your browser.');
+  await expect(page.locator('#zone-title')).toHaveText('Drop PNG files');
 });
 
 test('the privacy page says what it must', async ({ page, request }) => {
   await page.goto('/');
-  await page.getByRole('link', { name: 'Files never leave this device.' }).click();
+  await page.getByRole('link', { name: 'Privacy' }).click();
   await expect(page).toHaveURL(/\/privacy$/);
   const text = await page.locator('main').innerText();
   for (const claim of ['no logs', 'no analytics', 'no cookies', 'airplane mode', 'github.com/florentinf/rebake', 'contact@florentinf.dev']) {
