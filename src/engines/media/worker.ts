@@ -2,7 +2,7 @@ import { applyPalette, GIFEncoder, quantize } from 'gifenc';
 import {
   ALL_FORMATS, BlobSource, BufferTarget, CanvasSink, canEncodeAudio, Conversion, CustomAudioEncoder,
   EncodedPacket, FlacOutputFormat, getFirstEncodableVideoCodec, Input, Logging, MkvOutputFormat, MovOutputFormat,
-  Mp3OutputFormat, Mp4OutputFormat, OggOutputFormat, Output, Quality, registerEncoder, StreamTarget, WavOutputFormat,
+  Mp3OutputFormat, Mp4OutputFormat, OggOutputFormat, Output, Quality, registerEncoder, StreamTarget, VideoSampleSink, WavOutputFormat,
   WebMOutputFormat, type AudioCodec, type ConversionAudioOptions, type ConversionVideoOptions, type InputAudioTrack,
   type InputVideoTrack, type OutputFormat, type Target, type VideoCodec, type VideoSample,
 } from 'mediabunny';
@@ -135,6 +135,28 @@ async function readTracks(file: File) {
   return { input, video, audio };
 }
 
+const DECODE_TIMEOUT_MS = 5000;
+
+/**
+ * `canDecode` only says the config is accepted. Safari-family engines accept AV1 on
+ * chips with no AV1 decoder, then fail on the first frame, so this decodes one.
+ */
+async function decodesVideo(track: InputVideoTrack): Promise<boolean> {
+  if (!(await track.canDecode())) return false;
+  const first = new VideoSampleSink(track).samples();
+  const timeout = new Promise<'timeout'>((resolve) => { setTimeout(() => resolve('timeout'), DECODE_TIMEOUT_MS); });
+  try {
+    const result = await Promise.race([first.next(), timeout]);
+    if (result === 'timeout') return false;
+    result.value?.close();
+    return !!result.value;
+  } catch {
+    return false;
+  } finally {
+    void first.return(undefined).catch(() => {});
+  }
+}
+
 async function encodableVideo(plan: VideoPlan, track: InputVideoTrack): Promise<VideoCodec | null> {
   const width = await track.getDisplayWidth();
   const height = await track.getDisplayHeight();
@@ -146,7 +168,7 @@ async function inspect({ file, targets }: InspectRequest): Promise<InspectReply>
   if (!video && !audio) throw new RebakeError('corrupt', 'no tracks');
   const videoCodec = video?.codec ?? null;
   const audioCodec = audio?.codec ?? null;
-  const readsVideo = video ? await video.canDecode() : false;
+  const readsVideo = video ? await decodesVideo(video) : false;
   const readsAudio = audio ? await audio.canDecode() : false;
 
   const offered: FormatId[] = [];
@@ -255,7 +277,7 @@ interface VideoJob {
 
 async function planVideo(track: InputVideoTrack, plan: VideoPlan, options: ConvertOptions): Promise<VideoJob> {
   const source = track.codec;
-  const reads = await track.canDecode();
+  const reads = await decodesVideo(track);
   const displayWidth = await track.getDisplayWidth();
   const displayHeight = await track.getDisplayHeight();
   const { width, height, resized } = capped(displayWidth, displayHeight, options.maxResolution);
@@ -311,7 +333,7 @@ async function convertGif(request: ConvertRequest, context: HandlerContext) {
   const { options } = request;
   const { input, video } = await readTracks(request.file);
   if (!video) throw new RebakeError('unsupported', 'This file has no video to make a GIF from.');
-  if (!(await video.canDecode())) throw new RebakeError('unsupported', `This browser can't read ${nameOf(video.codec)} video.`);
+  if (!(await decodesVideo(video))) throw new RebakeError('unsupported', `This browser can't read ${nameOf(video.codec)} video.`);
 
   const start = options.trimStart ?? 0;
   const end = options.trimEnd ?? await input.computeDuration();

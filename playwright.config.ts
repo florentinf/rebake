@@ -2,7 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: 'tests',
-  timeout: 60_000,
+  // CI's macOS runner is a virtual M1 with no hardware video encoding to speak of.
+  timeout: process.env.CI ? 120_000 : 60_000,
   fullyParallel: true,
   workers: process.env.CI ? 2 : 4,
   forbidOnly: !!process.env.CI,

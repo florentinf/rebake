@@ -65,7 +65,7 @@ export const pick = (page: Page, target: string) =>
   page.locator(`label:has(input[name=target][value=${target}])`).click();
 
 /** Converts and returns the bytes handed to the sink. */
-export async function convertAndRead(page: Page, target: string, timeout = 45_000) {
+export async function convertAndRead(page: Page, target: string, timeout = process.env.CI ? 100_000 : 45_000) {
   await pick(page, target);
   await page.click('#primary');
   // A failed job reports the app's own words and the console, not just a state that never came.

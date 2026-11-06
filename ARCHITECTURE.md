@@ -68,7 +68,7 @@ Nothing else in `core/` needs editing.
 
 Codec checks need the file's real dimensions, so the media engine runs them per file in `inspect`. Mediabunny's `canEncode*` and `track.canDecode()` wrap `isConfigSupported`. `probe()` only asks for WebAssembly, because a remux needs no WebCodecs at all.
 
-`isConfigSupported` isn't proof. WebKit's GStreamer audio encoders accept Opus and AAC, then stamp packets from the input buffer, so the muxer rejects the stream. `media/encoder-probe.ts` therefore encodes a moment of audio in sizes matching neither codec's frame and requires rising timestamps. A failed probe sends AAC to the WASM encoder and hides anything that needs Opus. Video targets count too: a file whose audio has to become Opus doesn't offer WebM there. `tests/capability.spec.ts` converts every offered target, on every platform CI runs, including the Linux WebKit that exposed this.
+`isConfigSupported` isn't proof. WebKit's GStreamer audio encoders accept Opus and AAC, then stamp packets from the input buffer, so the muxer rejects the stream. `media/encoder-probe.ts` therefore encodes a moment of audio in sizes matching neither codec's frame and requires rising timestamps. A failed probe sends AAC to the WASM encoder and hides anything that needs Opus. Video targets count too: a file whose audio has to become Opus doesn't offer WebM there. Decoding has the same problem: WebKit accepts AV1 on chips with no AV1 decoder, then fails on the first frame, so `inspect` decodes one frame of the file and treats a failure as unreadable. `tests/capability.spec.ts` converts every offered target, on every platform CI runs, including the Linux WebKit that exposed this.
 
 ## Output
 
