@@ -130,6 +130,7 @@ Memory stays flat because finished bytes never sit in the worker. `core/spool.ts
 
 - `vendor/` holds binaries and their checksums. `vite.config.ts` emits them to `engines/<pkg>-<hash>/`: the URL is immutable but the filenames stay, because Emscripten's glue expects them.
 - The service worker precaches the shell, and caches `/engines/*` the first time each is fetched. A navigation tries the network for 2.5 s, then falls back to the cached shell.
+- `vendor/pandoc/pandoc.wasm` stays in plain Git, not LFS. At 58.4 MB it's under GitHub's 100 MB limit, takes 18.5 MB of a 41 MB `.git`, and changes only when pandoc is upgraded. CI's checkout takes 2 s. LFS would add a dependency to every clone, CI checkout and build, and solve nothing we have, and `vendor/SHA256SUMS` already pins the bytes. Revisit if a future file nears 100 MB or upgrades start to bloat the history.
 - CSP, COOP and COEP live in `deploy/rebake.florentinf.dev.caddy`. `scripts/serve.mjs` reads the same block, so tests run against the real headers.
 
 ## CSP
