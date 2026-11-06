@@ -10,12 +10,21 @@ declare global {
   interface Window { __saved?: { name: string; base64: string }[]; __realDownloads?: boolean }
 }
 
+const logged = new WeakMap<Page, string[]>();
+const errors = (page: Page) => {
+  if (!logged.has(page)) logged.set(page, []);
+  return logged.get(page)!;
+};
+
 /**
  * Records what the app hands to the download anchor. Playwright's Firefox loses
  * .webp/.avif/.jxl blob downloads on any page, so the conversion matrix reads
  * bytes here; real downloads have their own test in each browser.
  */
 export async function captureSaves(page: Page) {
+  page.on('console', (message) => {
+    if (message.type() === 'error' || message.type() === 'warning') errors(page).push(message.text().slice(0, 300));
+  });
   await page.addInitScript(() => {
     window.__saved = [];
     // The app's own CSP blocks fetch(blob:), so keep the Blob itself.
@@ -59,7 +68,12 @@ export const pick = (page: Page, target: string) =>
 export async function convertAndRead(page: Page, target: string, timeout = 45_000) {
   await pick(page, target);
   await page.click('#primary');
-  await expect(page.locator('body')).toHaveAttribute('data-state', 'done', { timeout });
+  // A failed job reports the app's own words and the console, not just a state that never came.
+  await expect.poll(async () => {
+    const failed = await page.locator('#meta.error').count();
+    if (failed) return `${await page.locator('#meta').textContent()} ${errors(page).join(' | ')}`;
+    return page.locator('body').getAttribute('data-state');
+  }, { timeout }).toBe('done');
   await expect.poll(() => page.evaluate(() => window.__saved?.length ?? 0)).toBeGreaterThan(0);
   const saved = await page.evaluate(() => window.__saved!.at(-1)!);
   return { name: saved.name, bytes: new Uint8Array(Buffer.from(saved.base64, 'base64')) };

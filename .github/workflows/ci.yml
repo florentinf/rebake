@@ -38,6 +38,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - run: sysctl -n machdep.cpu.brand_string && sw_vers -productVersion
       - run: npx playwright install webkit
       - run: brew install ffmpeg pandoc qpdf
       - run: npm run fixtures
