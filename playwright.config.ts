@@ -19,7 +19,9 @@ export default defineConfig({
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
     { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
-    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+    // Safari never runs on Linux, and WebKit's GStreamer codecs there aren't Safari's.
+    // CI runs these two on macOS instead, in the webkit-media job.
+    { name: 'webkit', use: { ...devices['Desktop Safari'] }, ...(process.platform === 'linux' ? { testIgnore: /(media|hdr)\.spec\.ts$/ } : {}) },
     // Playwright's Chromium ships no HEVC, so real HEVC behaviour needs real Chrome.
     ...(process.env.CI ? [] : [{ name: 'chrome', testMatch: /(media|hdr|drawer|batch)\.spec\.ts$/, use: { ...devices['Desktop Chrome'], channel: 'chrome' } }]),
   ],

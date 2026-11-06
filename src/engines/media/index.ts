@@ -4,6 +4,7 @@ import type { ConvertOptions, ConvertResult, Engine, Inspection, OnProgress, Sou
 import { FORMATS, type FormatId } from '../../core/formats';
 import { spoolTab } from '../../core/output';
 import { WorkerHost } from '../../core/worker-host';
+import { encodesNatively } from './encoder-probe';
 import type { ConvertReply, ConvertRequest, EncoderPackage, InspectReply, InspectRequest } from './protocol';
 
 const host = new WorkerHost(
@@ -15,17 +16,11 @@ const TARGETS: FormatId[] = ['mp4', 'mov', 'webm', 'mkv', 'gif', 'mp3', 'm4a', '
 
 const encoderFile = (pkg: EncoderPackage) => engines[pkg].files[`${pkg}-encoder.mjs`]!;
 
-async function hasNativeAac() {
-  if (typeof AudioEncoder !== 'function') return false;
-  const config = { codec: 'mp4a.40.2', sampleRate: 48000, numberOfChannels: 2, bitrate: 128000 };
-  return AudioEncoder.isConfigSupported(config).then((result) => !!result.supported, () => false);
-}
-
 async function encodersFor(target: FormatId): Promise<EncoderPackage[]> {
   if (target === 'mp3') return ['mp3'];
   if (target === 'flac') return ['flac'];
   const wantsAac = target === 'm4a' || target === 'mp4' || target === 'mov' || target === 'mkv';
-  return wantsAac && !(await hasNativeAac()) ? ['aac'] : [];
+  return wantsAac && !(await encodesNatively('aac')) ? ['aac'] : [];
 }
 
 export const mediaEngine: Engine = {

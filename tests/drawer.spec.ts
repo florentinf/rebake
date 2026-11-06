@@ -81,6 +81,7 @@ test('the small preset forces a smaller re-encode', async ({ page }) => {
 
 test('trim cuts to the requested range', async ({ page }) => {
   await open(page, 'long.mp4');
+  test.skip(await page.locator('input[name=target][value=webm]').count() === 0, 'this browser cannot write WebM');
   await page.click(moreButton);
   await page.fill('#trim-start', '2');
   await page.fill('#trim-end', '0:05');
@@ -203,6 +204,7 @@ test('a truncated video is refused plainly', async ({ page }) => {
 
 test('video progress is honest and cancel returns to the file', async ({ page }) => {
   await open(page, 'long.mp4');
+  test.skip(await page.locator('input[name=target][value=webm]').count() === 0, 'this browser cannot write WebM');
   await pick(page, 'webm');
   await page.click('#primary');
   await expect(page.locator('body')).toHaveAttribute('data-state', 'converting');

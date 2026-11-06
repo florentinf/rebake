@@ -11,6 +11,7 @@ import { RebakeError } from '../../core/errors';
 import { FORMATS, type FormatId } from '../../core/formats';
 import { openOutput } from '../../core/spool';
 import { serve, Transfer, type HandlerContext } from '../../core/worker-runtime';
+import { encodesNatively } from './encoder-probe';
 import { GIF_MAX_SECONDS, type ConvertReply, type ConvertRequest, type EncoderPackage, type InspectReply, type InspectRequest } from './protocol';
 
 // The vendored encoder extensions bind to these. See `patchBareImports` in scripts/vendor.mjs.
@@ -111,9 +112,10 @@ const BETTER_BROWSERS: Partial<Record<string, string>> = { hevc: 'Use Safari or 
 const nameOf = (codec: string | null) => (codec && CODEC_NAMES[codec]) ?? 'this';
 const openInput = (file: File) => new Input({ source: new BlobSource(file), formats: ALL_FORMATS });
 
-/** WASM encoders that are always available once fetched, whatever WebCodecs offers. */
+/** MP3, AAC and FLAC have WASM encoders, which work whatever WebCodecs offers. Opus has only the browser's. */
 const canEncodeAudioHere = async (codec: AudioCodec) =>
-  codec === 'mp3' || codec === 'aac' || codec === 'flac' || codec.startsWith('pcm-') || canEncodeAudio(codec);
+  codec === 'mp3' || codec === 'aac' || codec === 'flac' || codec.startsWith('pcm-')
+  || (codec === 'opus' ? encodesNatively('opus') : canEncodeAudio(codec));
 
 async function readTracks(file: File) {
   const input = openInput(file);
@@ -164,7 +166,11 @@ async function inspect({ file, targets }: InspectRequest): Promise<InspectReply>
     if (!video) continue;
     const copies = !!videoCodec && plan.legal.includes(videoCodec);
     const encodes = readsVideo && !!await encodableVideo(plan, video);
-    if (copies || encodes) offered.push(target);
+    if (!copies && !encodes) continue;
+    // Audio the browser can't read stays offered: the error points at Remove audio.
+    const audioFits = !audio || plan.audioKeep === 'any' || (!!audioCodec && plan.audioKeep.includes(audioCodec))
+      || !readsAudio || await canEncodeAudioHere(plan.audioEncode);
+    if (audioFits) offered.push(target);
   }
 
   const duration = await input.computeDuration().catch(() => undefined);
@@ -204,7 +210,7 @@ async function loadEncoder(pkg: EncoderPackage, url: string, context: HandlerCon
 
 async function ensureEncoder(codec: AudioCodec, encoders: ConvertRequest['encoders'], context: HandlerContext) {
   if (codec === 'mp3' || codec === 'flac') await loadEncoder(codec, encoders[codec], context);
-  else if (codec === 'aac' && !(await canEncodeAudio('aac'))) await loadEncoder('aac', encoders.aac, context);
+  else if (codec === 'aac' && !(await encodesNatively('aac'))) await loadEncoder('aac', encoders.aac, context);
 }
 
 const even = (value: number) => Math.max(2, Math.round(value / 2) * 2);
@@ -397,7 +403,13 @@ async function convert(request: ConvertRequest, context: HandlerContext) {
   if (!conversion.isValid) throw new RebakeError('unsupported', "This browser can't convert this file.");
 
   conversion.onProgress = (fraction) => context.progress({ stage: 'converting', fraction });
-  await conversion.execute();
+  await conversion.execute().catch((error: unknown) => {
+    // The muxer refusing an encoder's packets says nothing about the input.
+    if (error instanceof Error && /timestamp/i.test(error.message)) {
+      throw new RebakeError('unsupported', "This browser's encoder wrote a broken stream. Try another format.");
+    }
+    throw error;
+  });
   context.progress({ stage: 'finishing', fraction: null });
 
   const path = videoJob?.path ?? (audioOptions?.codec ? `encode:${audioOptions.codec}` : 'copy');

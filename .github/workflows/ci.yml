@@ -25,3 +25,24 @@ jobs:
       - run: npm test
         env:
           REBAKE_FIXTURES: ${{ runner.temp }}/fixtures
+
+  # Safari never runs on Linux, so WebKit's media tests run on the system it ships on.
+  webkit-media:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install webkit
+      - run: brew install ffmpeg pandoc qpdf
+      - run: npm run fixtures
+        env:
+          REBAKE_FIXTURES: ${{ runner.temp }}/fixtures
+      - run: npx playwright test --project=webkit tests/media.spec.ts tests/hdr.spec.ts tests/capability.spec.ts tests/batch.spec.ts tests/drawer.spec.ts
+        env:
+          REBAKE_FIXTURES: ${{ runner.temp }}/fixtures

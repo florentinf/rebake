@@ -67,6 +67,8 @@ test('an unreadable file in a batch is skipped and said so', async ({ page }) =>
 
 test('cancel works during a batch, and the page stays usable', async ({ page }) => {
   await page.setInputFiles('#picker', ['long.mp4', 'h264-aac.mov'].map(fixture));
+  await expect(page.locator('input[name=target][value=mkv]')).toHaveCount(1);
+  test.skip(await page.locator('input[name=target][value=webm]').count() === 0, 'this browser cannot write WebM');
   await pick(page, 'webm');
   await page.click('#primary');
   await expect(page.locator('#progress-text')).toContainText('1/2');
