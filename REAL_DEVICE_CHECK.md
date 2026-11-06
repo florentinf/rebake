@@ -2,7 +2,7 @@
 
 Run once on an iPhone (Safari) and once on an Android phone (Chrome), on https://rebake.florentinf.dev. Automated tests can't cover this.
 
-**Prepare on the phone:** a HEIC or JPG photo, a camera video, a song or voice memo, a real DOCX with images in it, a PDF and a CSV. Save them to the device, not a cloud folder. Clear rebake's site data so the first load is real.
+**Prepare on the phone:** a HEIC or JPG photo, a camera video, a voice memo, a real DOCX with images in it, a PDF and a CSV. Save them to the device, not a cloud folder. Clear rebake's site data so the first load is real.
 
 **1. Online, first visit.** Drop each file and read the meta line before tapping Convert. The size must appear before anything downloads.
 
@@ -10,7 +10,7 @@ Run once on an iPhone (Safari) and once on an Android phone (Chrome), on https:/
 | --- | --- | --- | --- | --- |
 | Images | Photo → PNG | ~2 MB (HEIC or JPG) | ☐ | ☐ |
 | Video | Video → MP4 | Nothing | ☐ | ☐ |
-| Audio | Song → MP3 | ~110 KB | ☐ | ☐ |
+| Audio | Voice memo → MP3 | ~110 KB | ☐ | ☐ |
 | Documents | DOCX → PDF | 23 MB | ☐ | ☐ |
 | PDF | PDF → JPG | 1.5 MB | ☐ | ☐ |
 | Data | CSV → JSON | Nothing | ☐ | ☐ |
