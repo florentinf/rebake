@@ -40,6 +40,24 @@ for (const input of FORMATS) {
   }
 }
 
+test('a DOCX with an EMF image refuses PDF and writes nothing', async ({ page }) => {
+  await open(page, 'image-emf.docx');
+  await pick(page, 'pdf');
+  await page.click('#primary');
+  expect(await failure(page)).toBe("One of this document's images is in a format PDF output can't use. Pick DOCX or HTML instead.");
+  await expect(page.locator('body')).toHaveAttribute('data-state', 'file');
+  expect(await page.evaluate(() => window.__saved!.length)).toBe(0);
+});
+
+test('a TIFF in a DOCX reaches the PDF as an image', async ({ page }) => {
+  await open(page, 'image-tiff.docx');
+  const { name, bytes } = await convertAndRead(page, 'pdf', 100_000);
+  expect(name).toBe('image-tiff.pdf');
+  const info = await pdfInfo(bytes);
+  expect(info.text).toContain(MARKER);
+  expect(info.images).toBe(2);
+});
+
 const imagesIn = (files: Record<string, Uint8Array>) => Object.keys(files).filter((name) => /\.(png|jpe?g)$/i.test(name));
 
 test('images in a DOCX survive into HTML', async ({ page }) => {

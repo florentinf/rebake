@@ -108,7 +108,7 @@ Memory stays flat because finished bytes never sit in the worker. `core/spool.ts
 `src/engines/document/`. Pandoc's official `pandoc.wasm`, on the same bridge as its `wasm/pandoc.js` minus the CDN import. The module compiles once and each job gets a fresh instance, so a bad file leaves nothing behind.
 
 - **Media:** HTML embeds images, and DOCX, ODT, EPUB and RTF hold them from pandoc's own media bag. Markdown and LaTeX can't hold them, so they come back in a ZIP beside the document. Anything pandoc reports it couldn't carry shows as a note on the result.
-- **PDF:** pandoc writes Typst, and typst.ts compiles it with `media.zip` mapped into its virtual file system. Fonts are the nine in `vendor/fonts`. Typst prints empty boxes for glyphs it lacks without saying so, so `NO_GLYPHS` refuses those scripts before it runs.
+- **PDF:** pandoc writes Typst, and typst.ts compiles it with `media.zip` mapped into its virtual file system. Fonts are the nine in `vendor/fonts`. Typst has no TIFF decoder, so `convert` returns any TIFFs, the image engine turns them into PNGs, and `finishPdf` compiles without re-running pandoc. Other formats it can't read, such as EMF, refuse with a message. Typst prints empty boxes for glyphs it lacks without saying so, so `NO_GLYPHS` refuses those scripts before it runs.
 
 ## PDF engine
 

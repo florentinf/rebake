@@ -1,11 +1,12 @@
 import { unzipSync } from 'fflate';
+import { sniff } from '../../core/detect';
 import type { OutputPart } from '../../core/engine';
 import { RebakeError } from '../../core/errors';
 import { fetchAssets, type AssetFile } from '../../core/fetch-asset';
 import { FORMATS, type FormatId } from '../../core/formats';
 import { serve, type HandlerContext } from '../../core/worker-runtime';
 import { runPandoc, type PandocWarning } from './pandoc';
-import type { ConvertReply, ConvertRequest } from './protocol';
+import type { ConvertReply, ConvertRequest, FinishPdfRequest, TiffReply } from './protocol';
 import { compilePdf, type TypstFailure } from './typst';
 
 const READERS: Partial<Record<FormatId, string>> = { md: 'markdown', html: 'html', docx: 'docx', odt: 'odt', epub: 'epub', rtf: 'rtf', tex: 'latex' };
@@ -39,7 +40,43 @@ function pandocFailure(stderr: string, warnings: PandocWarning[]): RebakeError {
   return new RebakeError('corrupt', stderr || 'pandoc produced nothing');
 }
 
-async function convert(request: ConvertRequest, context: HandlerContext): Promise<ConvertReply> {
+interface PdfJob {
+  source: string;
+  media: Record<string, Uint8Array>;
+  lost: number;
+  typst: ConvertRequest['typst'];
+}
+
+/** A job waiting for its TIFFs. The worker runs one job at a time. */
+let waiting: PdfJob | undefined;
+
+async function buildPdf({ source, media, lost, typst }: PdfJob, context: HandlerContext): Promise<ConvertReply> {
+  try {
+    const pdf = await compilePdf(source, media, typst, context);
+    return { output: new Blob([pdf as Uint8Array<ArrayBuffer>]), path: 'pandoc+typst', lost };
+  } catch (error) {
+    if (error instanceof RebakeError) throw error;
+    const message = (error as TypstFailure | null)?.message ?? String(error);
+    console.warn('typst:', message.slice(0, 500));
+    if (/image|decode|file format/i.test(message)) throw new RebakeError('unsupported', "One of this document's images is in a format PDF output can't use. Pick DOCX or HTML instead.");
+    throw new RebakeError('unsupported', "This document can't be laid out as a PDF. Pick DOCX or HTML instead.");
+  }
+}
+
+async function finishPdf({ pngs }: FinishPdfRequest, context: HandlerContext): Promise<ConvertReply> {
+  const job = waiting;
+  waiting = undefined;
+  if (!job) throw new RebakeError('crashed', 'No PDF is waiting.');
+  for (const [name, png] of Object.entries(pngs)) {
+    const renamed = `${name}.png`;
+    delete job.media[name];
+    job.media[renamed] = png;
+    job.source = job.source.replaceAll(`${name}"`, `${renamed}"`);
+  }
+  return buildPdf(job, context);
+}
+
+async function convert(request: ConvertRequest, context: HandlerContext): Promise<ConvertReply | TiffReply> {
   const { file, input, target, pageSize } = request;
   const module = await loadPandoc(request.pandoc, context);
   context.progress({ stage: 'converting', fraction: null });
@@ -71,15 +108,11 @@ async function convert(request: ConvertRequest, context: HandlerContext): Promis
     const source = new TextDecoder().decode(written);
     const missing = NO_GLYPHS.exec(source)?.[0];
     if (missing) throw new RebakeError('unsupported', `PDF output has no font for some of this text (${missing}). Pick DOCX or HTML instead.`);
-    try {
-      const pdf = await compilePdf(source, media, request.typst, context);
-      return { output: new Blob([pdf as Uint8Array<ArrayBuffer>]), path: 'pandoc+typst', lost };
-    } catch (error) {
-      if (error instanceof RebakeError) throw error;
-      const message = (error as TypstFailure | null)?.message ?? String(error);
-      if (/image|decode/i.test(message)) throw new RebakeError('unsupported', "One of this document's images is in a format PDF output can't use.");
-      throw new RebakeError('unsupported', "This document can't be laid out as a PDF. Pick DOCX or HTML instead.");
-    }
+    const job: PdfJob = { source, media, lost, typst: request.typst };
+    const tiffs = Object.entries(media).filter(([, content]) => sniff(content.subarray(0, 16)) === 'tiff');
+    if (!tiffs.length) return buildPdf(job, context);
+    waiting = job;
+    return { tiffs: Object.fromEntries(tiffs) as TiffReply['tiffs'] };
   }
 
   const parts: OutputPart[] = Object.entries(media)
@@ -93,4 +126,4 @@ async function convert(request: ConvertRequest, context: HandlerContext): Promis
   };
 }
 
-serve({ convert });
+serve({ convert, finishPdf });

@@ -1,10 +1,12 @@
 import engines from 'virtual:engines';
 import { platform } from '../../core/capabilities';
 import type { ConvertOptions, ConvertResult, Engine, OnProgress, OutputPart, SourceFile } from '../../core/engine';
+import { RebakeError } from '../../core/errors';
 import { uncachedBytes } from '../../core/fetch-asset';
 import { FORMATS, type FormatId } from '../../core/formats';
 import { WorkerHost } from '../../core/worker-host';
-import type { ConvertReply, ConvertRequest } from './protocol';
+import { imageEngine } from '../image';
+import type { ConvertReply, ConvertRequest, FinishPdfRequest, TiffReply } from './protocol';
 
 const host = new WorkerHost(
   () => new Worker(new URL('./worker.ts', import.meta.url), { type: 'module', name: 'rebake-document' }),
@@ -14,6 +16,22 @@ const TARGETS: FormatId[] = ['md', 'html', 'docx', 'odt', 'epub', 'rtf', 'tex', 
 const pandocFile = () => engines.pandoc.files['pandoc.wasm']!;
 const fontFiles = () => Object.values(engines.fonts.files);
 const asset = (file: { url: string; bytes: number }) => ({ url: file.url, bytes: file.bytes });
+
+async function tiffsToPng(tiffs: TiffReply['tiffs'], onProgress: OnProgress, signal: AbortSignal) {
+  const loading: OnProgress = (progress) => { if (progress.stage === 'loading') onProgress(progress); };
+  const pngs: FinishPdfRequest['pngs'] = {};
+  for (const [name, bytes] of Object.entries(tiffs)) {
+    const file = new File([bytes], name.split('/').pop()!, { type: 'image/tiff' });
+    try {
+      const { blob } = await imageEngine.convert({ file, format: 'tiff' }, 'png', { quality: 100, stripMetadata: true }, loading, signal);
+      pngs[name] = new Uint8Array(await blob.arrayBuffer());
+    } catch (error) {
+      if (error instanceof RebakeError && (error.code === 'cancelled' || error.code === 'offline')) throw error;
+      throw new RebakeError('unsupported', "One of this document's images is in a format PDF output can't use. Pick DOCX or HTML instead.");
+    }
+  }
+  return pngs;
+}
 
 export const documentEngine: Engine = {
   id: 'document',
@@ -45,7 +63,10 @@ export const documentEngine: Engine = {
         fonts: fontFiles().map(asset),
       },
     };
-    const reply = await host.call<ConvertReply>('convert', request, { onProgress, signal });
+    const first = await host.call<ConvertReply | TiffReply>('convert', request, { onProgress, signal });
+    const reply = 'tiffs' in first
+      ? await host.call<ConvertReply>('finishPdf', { pngs: await tiffsToPng(first.tiffs, onProgress, signal) } satisfies FinishPdfRequest, { onProgress, signal })
+      : first;
     const blob = reply.output.slice(0, reply.output.size, FORMATS[target].mime);
     const stem = source.file.name.replace(/\.[^.]+$/, '') || 'file';
     const parts: OutputPart[] | undefined = reply.media?.length

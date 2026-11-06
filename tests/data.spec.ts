@@ -77,3 +77,29 @@ test('a batch of data files comes back as one ZIP', async ({ page }) => {
   const { name } = await convertAndRead(page, 'json');
   expect(name).toBe('rebake.zip');
 });
+
+const LOCKED = 'This file is password-protected. Remove the password, then try again.';
+
+test('a password-protected XLSX says so on open', async ({ page }) => {
+  await page.setInputFiles('#picker', fixture('locked.xlsx'));
+  await expect(page.locator('#meta.error')).toHaveText(LOCKED, { timeout: 45_000 });
+  await expect(page.locator('input[name=target]')).toHaveCount(0);
+  expect(await page.evaluate(() => window.__saved!.length)).toBe(0);
+});
+
+test('a password-protected XLSX says so on convert', async ({ page }) => {
+  // Opening reads the workbook first, so to reach convert this answers the sheet list in its place.
+  await page.addInitScript(() => {
+    const post = Worker.prototype.postMessage;
+    Worker.prototype.postMessage = function (this: Worker, message: { id: number; method: string }, ...rest: never[]) {
+      if (message?.method !== 'sheets') return post.call(this, message, ...rest);
+      queueMicrotask(() => this.dispatchEvent(new MessageEvent('message', { data: { id: message.id, kind: 'result', result: ['Sheet1'] } })));
+    } as typeof post;
+  });
+  await page.goto('/');
+  await open(page, 'locked.xlsx');
+  await page.click('#primary');
+  expect(await failure(page)).toBe(LOCKED);
+  await expect(page.locator('body')).toHaveAttribute('data-state', 'file');
+  expect(await page.evaluate(() => window.__saved!.length)).toBe(0);
+});

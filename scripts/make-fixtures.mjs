@@ -1,8 +1,10 @@
 // Generates test fixtures outside the repo (REBAKE_FIXTURES, default ../rebake-fixtures).
 // HEIC needs macOS `sips`: there's no free HEVC encoder here, so CI runs without it.
 import { execFileSync } from 'node:child_process';
+import { createCipheriv, createHash, createHmac, randomBytes } from 'node:crypto';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, truncateSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { strToU8, strFromU8, unzipSync, zipSync } from 'fflate';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import Vips from 'wasm-vips';
 import * as XLSX from 'xlsx';
@@ -174,6 +176,37 @@ async function makeDocuments(out) {
   writeFileSync(`${out}/corrupt.docx`, readFileSync(`${out}/sample.docx`).subarray(0, 900));
   // Text no bundled font can draw: the PDF must refuse, not print empty boxes.
   writeFileSync(`${out}/japanese.md`, '# 見出し\n\nこれは日本語の文章です。\n');
+  writeFileSync(`${out}/image-emf.docx`, docxWithImage(`${out}/sample.docx`, 'emf', 'image/x-emf', minimalEmf()));
+  writeFileSync(`${out}/image-tiff.docx`, docxWithImage(`${out}/sample.docx`, 'tiff', 'image/tiff', readFileSync(`${out}/sample.tiff`)));
+}
+
+/** sample.docx with its PNG swapped for another format, the way Word stores one. */
+function docxWithImage(path, extension, type, bytes) {
+  const files = unzipSync(readFileSync(path));
+  const png = Object.keys(files).find((name) => name.startsWith('word/media/') && name.endsWith('.png'));
+  const base = png.split('/').pop();
+  const name = `image1.${extension}`;
+  delete files[png];
+  files[`word/media/${name}`] = new Uint8Array(bytes);
+  const rels = 'word/_rels/document.xml.rels';
+  files[rels] = strToU8(strFromU8(files[rels]).replace(`media/${base}`, `media/${name}`));
+  const types = '[Content_Types].xml';
+  files[types] = strToU8(strFromU8(files[types]).replace('<Default ', `<Default Extension="${extension}" ContentType="${type}"/><Default `));
+  return zipSync(files);
+}
+
+/** An EMF holding one rectangle: header, EMR_RECTANGLE, EMR_EOF. */
+function minimalEmf() {
+  const size = 88 + 24 + 20;
+  const emf = Buffer.alloc(size);
+  emf.writeUInt32LE(1, 0); emf.writeUInt32LE(88, 4);
+  emf.writeInt32LE(99, 16); emf.writeInt32LE(99, 20); emf.writeInt32LE(2540, 32); emf.writeInt32LE(2540, 36);
+  emf.write(' EMF', 40, 'latin1');
+  emf.writeUInt32LE(0x10000, 44); emf.writeUInt32LE(size, 48); emf.writeUInt32LE(3, 52); emf.writeUInt16LE(1, 58);
+  emf.writeInt32LE(1920, 72); emf.writeInt32LE(1080, 76); emf.writeInt32LE(508, 80); emf.writeInt32LE(286, 84);
+  emf.writeUInt32LE(43, 88); emf.writeUInt32LE(24, 92); emf.writeInt32LE(99, 104); emf.writeInt32LE(99, 108);
+  emf.writeUInt32LE(14, 112); emf.writeUInt32LE(20, 116); emf.writeUInt32LE(16, 128);
+  return emf;
 }
 
 async function makePdfs(out) {
@@ -204,7 +237,55 @@ function makeData(out) {
   const book = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(book, XLSX.utils.aoa_to_sheet(rows), 'Alpha');
   XLSX.utils.book_append_sheet(book, XLSX.utils.aoa_to_sheet([['only'], ['beta-marker']]), 'Beta');
-  writeFileSync(`${out}/sample.xlsx`, XLSX.write(book, { type: 'buffer', bookType: 'xlsx' }));
+  const workbook = XLSX.write(book, { type: 'buffer', bookType: 'xlsx' });
+  writeFileSync(`${out}/sample.xlsx`, workbook);
+  writeFileSync(`${out}/locked.xlsx`, encryptOffice(workbook, 'secret'));
+}
+
+/**
+ * ECMA-376 agile encryption, as Excel writes it: AES-256-CBC keyed by 100,000
+ * rounds of SHA-512, inside a compound file instead of a ZIP.
+ */
+function encryptOffice(plain, password) {
+  const SPIN = 100_000, SEGMENT = 4096;
+  const sha = (...parts) => createHash('sha512').update(Buffer.concat(parts)).digest();
+  const u32 = (value) => { const b = Buffer.alloc(4); b.writeUInt32LE(value); return b; };
+  const pad = (b, block = 16) => Buffer.concat([b, Buffer.alloc((block - (b.length % block)) % block)]);
+  const aes = (key, iv, data) => {
+    const cipher = createCipheriv('aes-256-cbc', key, iv.subarray(0, 16)).setAutoPadding(false);
+    return Buffer.concat([cipher.update(pad(data)), cipher.final()]);
+  };
+  const passwordSalt = randomBytes(16), keySalt = randomBytes(16);
+  let hash = sha(passwordSalt, Buffer.from(password, 'utf16le'));
+  for (let i = 0; i < SPIN; i++) hash = sha(u32(i), hash);
+  const derive = (block) => sha(hash, Buffer.from(block, 'hex')).subarray(0, 32);
+
+  const packageKey = randomBytes(32), verifier = randomBytes(16), hmacKey = randomBytes(64);
+  const encryptedVerifier = aes(derive('fea7d2763b4b9e79'), passwordSalt, verifier);
+  const encryptedHash = aes(derive('d7aa0f6d3061344e'), passwordSalt, sha(verifier));
+  const encryptedKey = aes(derive('146e0be7abacd0d6'), passwordSalt, packageKey);
+
+  const size = Buffer.alloc(8);
+  size.writeBigUInt64LE(BigInt(plain.length));
+  const segments = [size];
+  for (let at = 0, i = 0; at < plain.length; at += SEGMENT, i++) {
+    segments.push(aes(packageKey, sha(keySalt, u32(i)), plain.subarray(at, at + SEGMENT)));
+  }
+  const encrypted = Buffer.concat(segments);
+  const integrityIv = (block) => sha(keySalt, Buffer.from(block, 'hex'));
+  const hmac = createHmac('sha512', hmacKey).update(encrypted).digest();
+  const b64 = (b) => b.toString('base64');
+  const common = 'blockSize="16" keyBits="256" hashSize="64" cipherAlgorithm="AES" cipherChaining="ChainingModeCBC" hashAlgorithm="SHA512"';
+  const xml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n<encryption xmlns="http://schemas.microsoft.com/office/2006/encryption" xmlns:p="http://schemas.microsoft.com/office/2006/keyEncryptor/password" xmlns:c="http://schemas.microsoft.com/office/2006/keyEncryptor/certificate">`
+    + `<keyData saltSize="16" ${common} saltValue="${b64(keySalt)}"/>`
+    + `<dataIntegrity encryptedHmacKey="${b64(aes(packageKey, integrityIv('5fb2ad010cb9e1f6'), hmacKey))}" encryptedHmacValue="${b64(aes(packageKey, integrityIv('a0677f02b22c8433'), hmac))}"/>`
+    + `<keyEncryptors><keyEncryptor uri="http://schemas.microsoft.com/office/2006/keyEncryptor/password"><p:encryptedKey spinCount="${SPIN}" saltSize="16" ${common} saltValue="${b64(passwordSalt)}" encryptedVerifierHashInput="${b64(encryptedVerifier)}" encryptedVerifierHashValue="${b64(encryptedHash)}" encryptedKeyValue="${b64(encryptedKey)}"/></keyEncryptor></keyEncryptors></encryption>`;
+  const info = Buffer.concat([Buffer.from([4, 0, 4, 0]), u32(0x40), Buffer.from(xml)]);
+
+  const container = XLSX.CFB.utils.cfb_new();
+  XLSX.CFB.utils.cfb_add(container, '/EncryptionInfo', info);
+  XLSX.CFB.utils.cfb_add(container, '/EncryptedPackage', encrypted);
+  return Buffer.from(XLSX.CFB.write(container, { type: 'buffer' }));
 }
 
 /** A file over 1 GB: incompressible 1080p H.264, looped by stream copy. */
