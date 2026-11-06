@@ -135,19 +135,23 @@ async function readTracks(file: File) {
   return { input, video, audio };
 }
 
-const DECODE_TIMEOUT_MS = 5000;
+/** These two depend on the chip, so a browser can accept one it has no decoder for. */
+const HARDWARE_CODECS: ReadonlySet<string> = new Set(['av1', 'hevc']);
+const DECODE_TIMEOUT_MS = 2000;
 
 /**
- * `canDecode` only says the config is accepted. Safari-family engines accept AV1 on
- * chips with no AV1 decoder, then fail on the first frame, so this decodes one.
+ * `canDecode` only says the config is accepted. WebKit accepts AV1 on chips with no
+ * AV1 decoder, then fails on the first frame, so this decodes one. Only a failure
+ * counts: a slow decoder is still a decoder, and opening a file mustn't wait on it.
  */
 async function decodesVideo(track: InputVideoTrack): Promise<boolean> {
   if (!(await track.canDecode())) return false;
+  if (!track.codec || !HARDWARE_CODECS.has(track.codec)) return true;
   const first = new VideoSampleSink(track).samples();
   const timeout = new Promise<'timeout'>((resolve) => { setTimeout(() => resolve('timeout'), DECODE_TIMEOUT_MS); });
   try {
     const result = await Promise.race([first.next(), timeout]);
-    if (result === 'timeout') return false;
+    if (result === 'timeout') return true;
     result.value?.close();
     return !!result.value;
   } catch {
