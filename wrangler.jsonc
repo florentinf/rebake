@@ -1,0 +1,16 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  // Static files only. There is no Worker script, so no code of ours runs on Cloudflare.
+  "name": "rebake",
+  "compatibility_date": "2026-11-07",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  },
+  // rebake.app and the old host are attached in Cloudflare, so a deploy needs no zone access.
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": { "enabled": false },
+  "dependencies_instrumentation": { "enabled": false }
+}

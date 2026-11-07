@@ -1,0 +1,62 @@
+{
+  "name": "rebake",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Converts files without sending them anywhere.",
+  "homepage": "https://rebake.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/florentinf/rebake.git"
+  },
+  "bugs": {
+    "url": "https://github.com/florentinf/rebake/issues"
+  },
+  "license": "MIT",
+  "author": "Florentin Federer",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run vendor:verify && tsc --noEmit && vite build",
+    "serve": "node scripts/serve.mjs",
+    "test": "playwright test",
+    "test:quick": "playwright test --project=chromium",
+    "fixtures": "node scripts/make-fixtures.mjs",
+    "fixtures:large": "node scripts/make-fixtures.mjs --large",
+    "vendor": "node scripts/vendor.mjs",
+    "vendor:verify": "node scripts/vendor.mjs --verify",
+    "brand": "node scripts/brand-assets.mjs",
+    "font": "sh scripts/subset-font.sh",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@bjorn3/browser_wasi_shim": "0.4.2",
+    "@mediabunny/aac-encoder": "1.65.2",
+    "@mediabunny/flac-encoder": "1.65.2",
+    "@mediabunny/mp3-encoder": "1.65.2",
+    "@myriaddreamin/typst-ts-web-compiler": "0.7.0",
+    "client-zip": "2.5.1",
+    "fflate": "0.8.3",
+    "gifenc": "1.0.3",
+    "libheif-js": "1.23.5",
+    "mediabunny": "1.65.2",
+    "papaparse": "5.7.0",
+    "pdf-lib": "1.17.1",
+    "pdfjs-dist": "6.5.438",
+    "wasm-vips": "0.0.19",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
+    "yaml": "2.9.1"
+  },
+  "devDependencies": {
+    "@fontsource-variable/hanken-grotesk": "^5.3.0",
+    "@playwright/test": "^1.65.0",
+    "@types/node": "^26.6.6",
+    "@types/papaparse": "5.5.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.6",
+    "wrangler": "4.158.0"
+  }
+}

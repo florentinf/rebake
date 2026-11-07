@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security problem
+    url: https://github.com/florentinf/rebake/security/policy
+    about: Please report these privately.
+  - name: Private report
+    url: https://rebake.app/support
+    about: Report a problem by email instead of in public.

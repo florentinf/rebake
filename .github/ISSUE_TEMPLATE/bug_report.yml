@@ -1,0 +1,39 @@
+name: Bug report
+description: A conversion failed, gave a wrong result, or the page misbehaved.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Please don't attach private files. This form is public, and a description is usually enough.
+  - type: input
+    id: conversion
+    attributes:
+      label: Conversion
+      placeholder: HEIC to JPG
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: Safari 19 on iPhone 15
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: happened
+    attributes:
+      label: What happened
+      description: Include the exact message, with any personal details removed.
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: Options you changed
+      description: Quality, size, trim and so on. Skip this if you left them alone.

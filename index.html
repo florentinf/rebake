@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>rebake</title>
+    <meta name="description" content="Convert files without sending them anywhere." />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f9f8f6" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#141312" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/icon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="preload" href="/src/assets/fonts/hanken-grotesk.woff2" as="font" type="font/woff2" crossorigin />
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body data-state="empty">
+    <noscript><p class="noscript">Enable JavaScript to convert files. They never leave your device.</p></noscript>
+    <div class="drop-frame" aria-hidden="true"></div>
+    <div class="page">
+      <header class="mark"><a href="/">rebake</a></header>
+
+      <main class="stage">
+        <h1 class="route" id="title" tabindex="-1" hidden>
+          <span id="from"></span>
+          <span id="joiner" class="vh">to</span>
+          <span class="glyph" id="glyph" aria-hidden="true"><svg><path id="track" /><path id="arrow" /></svg></span>
+          <span id="to" class="to"></span>
+          <span class="rider" id="rider" aria-hidden="true">0%</span>
+        </h1>
+
+        <div class="zone" id="zone">
+          <i class="corner a" aria-hidden="true"></i><i class="corner b" aria-hidden="true"></i><i class="corner c" aria-hidden="true"></i><i class="corner d" aria-hidden="true"></i>
+          <h1 class="zone-title" id="zone-title">Drop files to convert</h1>
+          <p class="zone-line" id="zone-line">They never leave your device.</p>
+          <button class="btn small raised" id="choose" type="button"><span>Choose files</span></button>
+          <div class="zone-negative" id="zone-negative" aria-hidden="true">
+            <i class="corner a"></i><i class="corner b"></i><i class="corner c"></i><i class="corner d"></i>
+            <p class="zone-title" id="negative-title">Drop files to convert</p>
+            <p class="zone-line" id="negative-line">They never leave your device.</p>
+            <span class="btn small"><span>Choose files</span></span>
+          </div>
+        </div>
+
+        <ul class="sheet" id="sheet" aria-label="Your files" hidden></ul>
+
+        <div class="col pick" id="pick" hidden>
+          <fieldset>
+            <legend class="vh">Convert to</legend>
+            <div class="seg seg-large" id="targets"></div>
+          </fieldset>
+        </div>
+
+        <div class="col drawer" id="drawer" hidden>
+          <button class="options-head" id="more" type="button" aria-expanded="false" aria-controls="options">
+            <b>Options</b>
+            <span class="summary" id="summary"></span>
+            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" /></svg>
+          </button>
+          <div class="col options" id="options" inert>
+            <div class="options-inner">
+              <fieldset class="choice" data-show="compression">
+                <legend>Compression</legend>
+                <div class="seg">
+                  <label class="target"><input type="radio" name="compression" data-keep="compression" value="lossy" checked /><span>Lossy</span></label>
+                  <label class="target"><input type="radio" name="compression" data-keep="compression" value="lossless" /><span>Lossless</span></label>
+                </div>
+              </fieldset>
+              <fieldset class="choice" data-show="pdf-images">
+                <legend>Image compression</legend>
+                <div class="seg">
+                  <label class="target"><input type="radio" name="pdfCompression" data-keep="pdfCompression" value="preserve" checked /><span>Keep quality</span></label>
+                  <label class="target"><input type="radio" name="pdfCompression" data-keep="pdfCompression" value="lossless" /><span>PNG</span></label>
+                  <label class="target"><input type="radio" name="pdfCompression" data-keep="pdfCompression" value="lossy" /><span>JPG</span></label>
+                </div>
+              </fieldset>
+              <div class="opt top" id="quality-field" data-show="lossy-image">
+                <label class="label" for="quality">Quality</label>
+                <div class="opt-control">
+                  <div class="sl" id="quality-slider">
+                    <input id="quality" data-keep="quality" type="range" min="1" max="100" value="82" />
+                    <i class="sl-rail"><i class="sl-fill"></i></i>
+                    <i class="sl-mark"></i>
+                    <b class="sl-rider" id="quality-value"></b>
+                    <i class="sl-thumb"></i>
+                  </div>
+                  <div class="sl-ends"><span>Smaller file</span><span>Better quality</span></div>
+                </div>
+              </div>
+              <label class="check" data-show="recompress">
+                <input id="recompress" data-keep="recompress" type="checkbox" role="switch" />
+                <span>Recompress existing JPGs</span><i class="switch" aria-hidden="true"></i>
+              </label>
+              <div class="opt" data-show="image" role="group" aria-label="Maximum size">
+                <span class="label">Max size</span>
+                <div class="field-pair">
+                  <label class="field"><span class="vh">Max width</span><input class="input" id="max-width" data-keep="maxWidth" type="number" inputmode="numeric" min="1" max="32768" step="1" placeholder="Width" /></label>
+                  <i aria-hidden="true">×</i>
+                  <label class="field"><span class="vh">Max height</span><input class="input" id="max-height" data-keep="maxHeight" type="number" inputmode="numeric" min="1" max="32768" step="1" placeholder="Height" /></label>
+                </div>
+              </div>
+              <div class="opt top" data-show="svg-size" role="group" aria-label="SVG render size">
+                <span class="label">Render size</span>
+                <div class="opt-control">
+                  <div class="field-pair">
+                    <label class="field"><span class="vh">Render width</span><input class="input" id="svg-width" data-keep="svgWidth" type="number" inputmode="numeric" min="1" max="32768" step="1" placeholder="Width" aria-describedby="svg-hint" /></label>
+                    <i aria-hidden="true">×</i>
+                    <label class="field"><span class="vh">Render height</span><input class="input" id="svg-height" data-keep="svgHeight" type="number" inputmode="numeric" min="1" max="32768" step="1" placeholder="Height" aria-describedby="svg-hint" /></label>
+                  </div>
+                  <p class="hint" id="svg-hint">Keeps the aspect ratio. Left empty, the long edge is at least 1,024 px.</p>
+                </div>
+              </div>
+              <div class="stack" data-show="pdf-resolution">
+                <fieldset class="choice">
+                  <legend>Resolution</legend>
+                  <div class="seg">
+                    <label class="target"><input type="radio" name="dpi" data-keep="dpi" value="150" checked /><span>150 DPI</span></label>
+                    <label class="target"><input type="radio" name="dpi" data-keep="dpi" value="300" /><span>300 DPI</span></label>
+                    <label class="target"><input type="radio" name="dpi" data-keep="dpi" value="custom" /><span>Custom</span></label>
+                  </div>
+                </fieldset>
+                <label class="field opt" data-show="custom-dpi"><span>Custom DPI</span><input class="input" id="pdf-dpi" data-keep="pdfDpi" type="number" inputmode="numeric" min="36" max="600" step="1" value="300" placeholder="36–600" /></label>
+              </div>
+              <fieldset class="choice" data-show="transparency">
+                <legend>Transparency</legend>
+                <div class="seg">
+                  <label class="target"><input type="radio" name="transparency" data-keep="transparency" value="preserve" checked /><span>Keep</span></label>
+                  <label class="target"><input type="radio" name="transparency" data-keep="transparency" value="flatten" /><span>Use background</span></label>
+                </div>
+              </fieldset>
+              <label class="field opt color-field" data-show="background"><span>Background color</span><input id="background" data-keep="background" type="color" value="#ffffff" /></label>
+              <fieldset class="choice" data-show="animation">
+                <legend>Animation</legend>
+                <div class="seg">
+                  <label class="target"><input type="radio" name="animation" data-keep="animation" value="all" checked /><span>All frames</span></label>
+                  <label class="target"><input type="radio" name="animation" data-keep="animation" value="first" /><span>First frame</span></label>
+                </div>
+              </fieldset>
+              <fieldset class="choice" data-show="color-space">
+                <legend>Color</legend>
+                <div class="seg">
+                  <label class="target"><input type="radio" name="colorSpace" data-keep="colorSpace" value="srgb" checked /><span>sRGB</span></label>
+                  <label class="target"><input type="radio" name="colorSpace" data-keep="colorSpace" value="preserve" /><span>Keep profile</span></label>
+                </div>
+                <p class="hint" data-show="color-keep">Keeps the source colors and their profile, even with metadata removed.</p>
+              </fieldset>
+              <label class="check" data-show="metadata">
+                <input id="strip" data-keep="strip" type="checkbox" role="switch" checked />
+                <span>Remove location and camera data</span>
+                <i class="switch" aria-hidden="true"></i>
+              </label>
+
+              <fieldset class="choice" data-show="page-size">
+                <legend>Page size</legend>
+                <div class="seg">
+                  <label class="target"><input type="radio" name="pageSize" data-keep="pageSize" value="a4" checked /><span>A4</span></label>
+                  <label class="target"><input type="radio" name="pageSize" data-keep="pageSize" value="letter" /><span>Letter</span></label>
+                </div>
+              </fieldset>
+              <label class="field opt" data-show="pages">
+                <span>Pages</span>
+                <input class="input" id="pages" type="text" autocomplete="off" placeholder="All, or like 1-3, 5" />
+              </label>
+              <fieldset class="choice" data-show="sheets">
+                <legend>Sheet</legend>
+                <div class="seg" id="sheets"></div>
+              </fieldset>
+
+              <fieldset class="choice" data-show="video">
+                <legend>Quality</legend>
+                <div class="seg">
+                  <label class="target"><input type="radio" name="preset" data-keep="preset" value="small" /><span>Small file</span></label>
+                  <label class="target"><input type="radio" name="preset" data-keep="preset" value="balanced" checked /><span>Balanced</span></label>
+                  <label class="target"><input type="radio" name="preset" data-keep="preset" value="high" /><span>High</span></label>
+                </div>
+              </fieldset>
+              <fieldset class="choice" data-show="video gif">
+                <legend>Max resolution</legend>
+                <div class="seg">
+                  <label class="target"><input type="radio" name="resolution" data-keep="resolution" value="" checked /><span>Original</span></label>
+                  <label class="target"><input type="radio" name="resolution" data-keep="resolution" value="2160" /><span>4K</span></label>
+                  <label class="target"><input type="radio" name="resolution" data-keep="resolution" value="1080" /><span>1080p</span></label>
+                  <label class="target"><input type="radio" name="resolution" data-keep="resolution" value="720" /><span>720p</span></label>
+                  <label class="target"><input type="radio" name="resolution" data-keep="resolution" value="480" /><span>480p</span></label>
+                </div>
+              </fieldset>
+              <div class="opt top trim" id="trim" data-show="trim">
+                <span class="label">Trim</span>
+                <div class="opt-control">
+                  <div class="tr-track" id="trim-track">
+                    <div class="tr-clip">
+                      <div class="tr-strip" id="trim-strip"></div>
+                      <i class="tr-before"></i><i class="tr-after"></i>
+                    </div>
+                    <i class="tr-span"></i>
+                    <i class="tr-handle tr-start" role="slider" tabindex="0" aria-label="Trim start" aria-valuemin="0"></i>
+                    <i class="tr-handle tr-end" role="slider" tabindex="0" aria-label="Trim end" aria-valuemin="0"></i>
+                  </div>
+                  <div class="trim-times">
+                    <label class="field"><span>Start</span><input class="input" id="trim-start" type="text" inputmode="decimal" autocomplete="off" placeholder="0:00" /></label>
+                    <label class="field"><span>End</span><input class="input" id="trim-end" type="text" inputmode="decimal" autocomplete="off" placeholder="End" /></label>
+                  </div>
+                </div>
+              </div>
+              <label class="check" data-show="has-audio">
+                <input id="remove-audio" data-keep="removeAudio" type="checkbox" role="switch" />
+                <span>Remove sound</span>
+                <i class="switch" aria-hidden="true"></i>
+              </label>
+
+              <fieldset class="choice" data-show="lossy-audio">
+                <legend>Bitrate, kbps</legend>
+                <div class="seg">
+                  <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="" checked /><span>Auto</span></label>
+                  <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="96000" /><span>96</span></label>
+                  <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="128000" /><span>128</span></label>
+                  <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="192000" /><span>192</span></label>
+                  <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="256000" /><span>256</span></label>
+                  <label class="target"><input type="radio" name="bitrate" data-keep="bitrate" value="320000" /><span>320</span></label>
+                </div>
+              </fieldset>
+              <fieldset class="choice" data-show="audio">
+                <legend>Channels</legend>
+                <div class="seg">
+                  <label class="target"><input type="radio" name="channels" data-keep="channels" value="" checked /><span>Same</span></label>
+                  <label class="target"><input type="radio" name="channels" data-keep="channels" value="1" /><span>Mono</span></label>
+                  <label class="target"><input type="radio" name="channels" data-keep="channels" value="2" /><span>Stereo</span></label>
+                </div>
+              </fieldset>
+              <p class="hint options-note" id="options-note" hidden></p>
+              <button class="btn small soft reset-options" id="reset-options" type="button" hidden><span>Reset options</span></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="notice" id="notice" hidden>
+          <p class="meta" id="meta"></p>
+          <a class="report" id="report" href="/support" target="_blank" rel="noopener" hidden>Report a problem</a>
+        </div>
+        <p class="plan-note" id="plan-note" hidden></p>
+
+        <div class="formats" id="formats">
+          <button class="more" id="formats-toggle" type="button" aria-expanded="false" aria-controls="formats-panel">
+            <span>All formats</span>
+            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" /></svg>
+          </button>
+          <div class="col" id="formats-panel" inert>
+            <div class="index" id="index"><p class="lookup" id="lookup"></p></div>
+          </div>
+        </div>
+
+        <div class="col status-wrap" id="status-wrap" hidden>
+          <div class="status" id="progress" aria-label="Converting" aria-valuemin="0" aria-valuemax="100">
+            <span id="progress-text"></span>
+            <span class="status-side" id="progress-side"></span>
+          </div>
+        </div>
+
+        <div class="action" id="action" hidden>
+          <button class="btn grow" id="primary" type="button"><span>Convert</span></button>
+          <button class="btn soft grow" id="secondary" type="button" hidden>Cancel</button>
+        </div>
+        <div class="revision-actions" id="revision-actions" hidden>
+          <button class="quiet" id="download-again" type="button">Download again</button>
+          <button class="quiet" id="change-format" type="button">Change format</button>
+          <button class="quiet" id="adjust-settings" type="button">Change options</button>
+        </div>
+      </main>
+
+      <footer class="promise">
+        <a href="https://github.com/florentinf/rebake">Free and open source</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/support" target="_blank" rel="noopener">Report a problem</a>
+      </footer>
+    </div>
+
+    <input id="picker" type="file" multiple hidden
+      accept="image/heic,image/heif,.heic,.heif,.hif,image/jpeg,image/png,image/webp,image/avif,image/gif,image/tiff,image/jxl,.jxl,image/svg+xml,.svg,image/x-icon,.ico,.cur,video/mp4,video/quicktime,video/webm,video/x-matroska,.mp4,.m4v,.mov,.qt,.webm,.mkv,audio/mpeg,audio/mp4,audio/aac,audio/ogg,audio/opus,audio/flac,audio/wav,.mp3,.m4a,.m4b,.aac,.opus,.ogg,.oga,.flac,.wav,.md,.markdown,.mdown,.mkd,.html,.htm,.xhtml,.docx,.odt,.epub,.rtf,.tex,.latex,.pdf,.csv,.tsv,.tab,.json,.yaml,.yml,.xlsx" />
+    <p class="vh" id="live" role="status" aria-live="polite"></p>
+  </body>
+</html>

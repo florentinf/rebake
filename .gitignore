@@ -1,0 +1,15 @@
+node_modules
+dist
+test-results
+playwright-report
+.venv
+.DS_Store
+*.local
+.wrangler
+*.log
+.dev.vars
+
+# Design tooling, kept local. DESIGN.md at the root is a symlink for it.
+.impeccable
+/DESIGN.md
+/PRODUCT.md

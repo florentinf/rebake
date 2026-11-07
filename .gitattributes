@@ -1,0 +1,12 @@
+* text=auto eol=lf
+
+*.wasm binary
+*.pack binary
+*.otf binary
+*.ttf binary
+*.woff2 binary
+*.png binary
+
+# Engines checked in by scripts/vendor.mjs. Never edit these by hand.
+vendor/** linguist-vendored -text
+package-lock.json linguist-generated

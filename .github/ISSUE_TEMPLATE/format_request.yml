@@ -1,0 +1,25 @@
+name: Format request
+description: Ask for a conversion rebake doesn't offer.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: rebake stays narrow on purpose, and everything has to run in the browser. Some things are already ruled out in [the spec](https://github.com/florentinf/rebake/blob/main/docs/SPEC.md#out-of-scope-and-later).
+  - type: input
+    id: conversion
+    attributes:
+      label: Conversion
+      placeholder: CBZ to PDF
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: What you'd use it for
+    validations:
+      required: true
+  - type: textarea
+    id: library
+    attributes:
+      label: A library that could do it
+      description: Optional. It has to run in WebAssembly or plain JavaScript, with a licence that allows it.

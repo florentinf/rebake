@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  # Only build and test tools. Runtime packages are vendored, so bumping one
+  # means `npm run vendor` and a human looking at the patches in scripts/vendor.mjs.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    allow:
+      - dependency-type: development
+    groups:
+      tooling:
+        patterns: ['*']

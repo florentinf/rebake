@@ -1,0 +1,38 @@
+import { existsSync } from 'node:fs';
+import { defineConfig, devices } from '@playwright/test';
+
+const CHROME_PATHS = [
+  '/Applications/Google Chrome.app',
+  '/opt/google/chrome/chrome',
+  'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+];
+
+export default defineConfig({
+  testDir: 'tests',
+  // CI's macOS runner is a virtual M1 with no hardware video encoding to speak of.
+  timeout: process.env.CI ? 120_000 : 60_000,
+  fullyParallel: true,
+  // Linux WebKit renders in software, so a busy runner can drop frames or hang a load.
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 2 : 4,
+  forbidOnly: !!process.env.CI,
+  reporter: process.env.CI ? 'github' : 'line',
+  // REBAKE_URL points the suite at a deployed site instead of the local build.
+  use: { baseURL: process.env.REBAKE_URL ?? 'http://127.0.0.1:4319', acceptDownloads: true },
+  ...(process.env.REBAKE_URL ? {} : {
+    webServer: {
+      command: 'node scripts/serve.mjs',
+      url: 'http://127.0.0.1:4319',
+      reuseExistingServer: false,
+    },
+  }),
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+    // Safari never runs on Linux, and WebKit's GStreamer codecs there aren't Safari's.
+    // CI runs these two on macOS instead, in the webkit-media job.
+    { name: 'webkit', use: { ...devices['Desktop Safari'] }, ...(process.platform === 'linux' ? { testIgnore: /(media|hdr)\.spec\.ts$/ } : {}) },
+    // Playwright's Chromium ships no HEVC, so real HEVC behaviour needs real Chrome.
+    ...(process.env.CI || !CHROME_PATHS.some(existsSync) ? [] : [{ name: 'chrome', testMatch: /(media|hdr|drawer|batch)\.spec\.ts$/, use: { ...devices['Desktop Chrome'], channel: 'chrome' } }]),
+  ],
+});

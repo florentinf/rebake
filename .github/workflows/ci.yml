@@ -1,0 +1,94 @@
+# Builds and tests every change. A push to main then deploys the exact dist/ the
+# tests ran against, so the live site is always a tested commit in this repo.
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+# A new push to a pull request replaces its running checks. main always finishes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium firefox webkit
+        timeout-minutes: 10
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg pandoc qpdf
+      - run: npm run fixtures
+        env:
+          REBAKE_FIXTURES: ${{ runner.temp }}/fixtures
+      - run: npm test
+        env:
+          REBAKE_FIXTURES: ${{ runner.temp }}/fixtures
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: github.event_name == 'push'
+        with:
+          name: dist
+          path: dist
+          retention-days: 7
+
+  # Safari never runs on Linux, so WebKit's media tests run on the system it ships on.
+  webkit-media:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: sysctl -n machdep.cpu.brand_string && sw_vers -productVersion
+      - run: npx playwright install webkit
+        timeout-minutes: 10
+      - run: brew install ffmpeg pandoc qpdf
+      - run: npm run fixtures
+        env:
+          REBAKE_FIXTURES: ${{ runner.temp }}/fixtures
+      - run: npx playwright test --project=webkit tests/media.spec.ts tests/hdr.spec.ts tests/capability.spec.ts tests/batch.spec.ts tests/drawer.spec.ts
+        env:
+          REBAKE_FIXTURES: ${{ runner.temp }}/fixtures
+
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [test, webkit-media]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency: production
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: dist
+          path: dist
+      - run: npm run deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
